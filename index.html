@@ -46,7 +46,7 @@
             width: 100%;
             height: 100%;
             z-index: -1;
-            opacity: 0.08;
+            opacity: 0.05;
             background-image: url('https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');
             background-size: cover;
             background-position: center;
@@ -57,7 +57,7 @@
             background-color: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(8px);
             box-shadow: var(--shadow-sm);
-            padding: 1rem 0;
+            padding: 0.5rem 0;
             position: sticky;
             top: 0;
             z-index: 100;
@@ -66,7 +66,7 @@
         .header-container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 0 1.5rem;
+            padding: 0 1rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -75,9 +75,9 @@
         .logo {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.4rem;
             font-family: 'Rubik', sans-serif;
-            font-size: 1.5rem;
+            font-size: 1.25rem;
             font-weight: 700;
             color: var(--primary);
             text-decoration: none;
@@ -85,27 +85,13 @@
 
         .logo i {
             color: var(--accent);
-            font-size: 1.25rem;
-        }
-
-        .mobile-menu {
-            display: none;
-            cursor: pointer;
-        }
-
-        .mobile-menu span {
-            display: block;
-            width: 25px;
-            height: 3px;
-            background-color: var(--dark);
-            margin: 5px 0;
-            transition: var(--transition);
+            font-size: 1rem;
         }
 
         /* Main Content */
         main {
             flex: 1;
-            padding: 3rem 1rem;
+            padding: 1rem;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -113,20 +99,20 @@
         }
 
         .menu-container {
-            max-width: 800px;
+            max-width: 1000px;
             width: 100%;
             margin: 0 auto;
         }
 
         .menu-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
         }
 
         .menu-item {
             background-color: var(--white);
-            border-radius: 12px;
+            border-radius: 8px;
             overflow: hidden;
             box-shadow: var(--shadow-sm);
             transition: var(--transition);
@@ -140,12 +126,12 @@
         }
 
         .menu-item:hover {
-            transform: translateY(-5px);
+            transform: translateY(-3px);
             box-shadow: var(--shadow);
         }
 
         .menu-image {
-            height: 140px;
+            height: 80px;
             position: relative;
             overflow: hidden;
         }
@@ -162,7 +148,7 @@
         }
 
         .menu-content {
-            padding: 1.5rem;
+            padding: 1rem;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -171,14 +157,14 @@
         }
 
         .menu-icon {
-            width: 60px;
-            height: 60px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             display: flex;
             justify-content: center;
             align-items: center;
-            margin-bottom: 1rem;
-            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
             position: relative;
             z-index: 1;
         }
@@ -252,69 +238,23 @@
         }
 
         .menu-title {
-            font-size: 1.25rem;
+            font-size: 1rem;
             font-weight: 600;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.25rem;
             color: var(--dark);
         }
 
         .menu-description {
-            font-size: 0.9rem;
+            font-size: 0.75rem;
             color: var(--gray);
-            line-height: 1.4;
-        }
-
-        /* Floating Pokemon */
-        .floating-pokemon {
-            position: fixed;
-            width: 120px;
-            height: 120px;
-            z-index: -1;
-            opacity: 0.15;
-            filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.1));
-        }
-
-        .floating-pokemon.pikachu {
-            top: 10%;
-            right: 5%;
-            animation: float 15s infinite ease-in-out;
-        }
-
-        .floating-pokemon.charmander {
-            bottom: 15%;
-            left: 5%;
-            animation: float 18s infinite ease-in-out;
-        }
-
-        .floating-pokemon.squirtle {
-            top: 50%;
-            left: 3%;
-            animation: float 20s infinite ease-in-out;
-        }
-
-        .floating-pokemon.bulbasaur {
-            bottom: 10%;
-            right: 8%;
-            animation: float 17s infinite ease-in-out;
-        }
-
-        @keyframes float {
-            0% {
-                transform: translateY(0) rotate(0deg);
-            }
-            50% {
-                transform: translateY(-20px) rotate(5deg);
-            }
-            100% {
-                transform: translateY(0) rotate(0deg);
-            }
+            line-height: 1.3;
         }
 
         /* Footer */
         footer {
             background-color: var(--dark);
             color: var(--white);
-            padding: 1.5rem;
+            padding: 0.75rem;
             text-align: center;
         }
 
@@ -326,15 +266,15 @@
         .footer-links {
             display: flex;
             justify-content: center;
-            gap: 1.5rem;
-            margin-bottom: 1rem;
+            gap: 1rem;
+            margin-bottom: 0.5rem;
             flex-wrap: wrap;
         }
 
         .footer-links a {
             color: rgba(255, 255, 255, 0.7);
             text-decoration: none;
-            font-size: 0.85rem;
+            font-size: 0.75rem;
             transition: var(--transition);
         }
 
@@ -345,13 +285,13 @@
         .social-links {
             display: flex;
             justify-content: center;
-            gap: 1rem;
-            margin-bottom: 1rem;
+            gap: 0.75rem;
+            margin-bottom: 0.5rem;
         }
 
         .social-links a {
-            width: 36px;
-            height: 36px;
+            width: 28px;
+            height: 28px;
             background-color: rgba(255, 255, 255, 0.1);
             border-radius: 50%;
             display: flex;
@@ -363,71 +303,83 @@
 
         .social-links a:hover {
             background-color: var(--primary);
-            transform: translateY(-3px);
+            transform: translateY(-2px);
         }
 
         .copyright {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             color: rgba(255, 255, 255, 0.5);
-            padding-top: 1rem;
+            padding-top: 0.5rem;
             border-top: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         /* Responsive */
         @media (max-width: 768px) {
-            .mobile-menu {
-                display: block;
-            }
-
             .menu-grid {
                 grid-template-columns: repeat(2, 1fr);
-                gap: 1rem;
+                gap: 0.75rem;
             }
 
             .menu-content {
-                padding: 1.25rem;
+                padding: 0.75rem;
             }
 
             .menu-icon {
-                width: 50px;
-                height: 50px;
-                font-size: 1.25rem;
+                width: 35px;
+                height: 35px;
+                font-size: 1rem;
             }
 
             .menu-title {
-                font-size: 1.1rem;
+                font-size: 0.9rem;
             }
 
             .menu-description {
-                font-size: 0.85rem;
+                font-size: 0.7rem;
             }
 
-            .floating-pokemon {
-                width: 80px;
-                height: 80px;
+            .menu-image {
+                height: 70px;
             }
         }
 
         @media (max-width: 480px) {
             .menu-grid {
-                grid-template-columns: 1fr;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.5rem;
             }
 
             .logo {
-                font-size: 1.25rem;
+                font-size: 1.1rem;
             }
 
             .logo i {
-                font-size: 1rem;
+                font-size: 0.9rem;
             }
 
             .menu-image {
-                height: 120px;
+                height: 60px;
             }
 
-            .floating-pokemon {
-                width: 60px;
-                height: 60px;
+            .menu-content {
+                padding: 0.5rem;
+            }
+
+            .menu-icon {
+                width: 30px;
+                height: 30px;
+                font-size: 0.9rem;
+                margin-bottom: 0.25rem;
+            }
+
+            .menu-title {
+                font-size: 0.85rem;
+                margin-bottom: 0.1rem;
+            }
+
+            .menu-description {
+                font-size: 0.65rem;
+                line-height: 1.2;
             }
         }
     </style>
@@ -436,12 +388,6 @@
     <!-- Background decoration -->
     <div class="bg-decoration"></div>
 
-    <!-- Floating Pokemon -->
-    <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/25.png" alt="Pikachu" class="floating-pokemon pikachu">
-    <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/4.png" alt="Charmander" class="floating-pokemon charmander">
-    <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/7.png" alt="Squirtle" class="floating-pokemon squirtle">
-    <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/1.png" alt="Bulbasaur" class="floating-pokemon bulbasaur">
-
     <!-- Header -->
     <header>
         <div class="header-container">
@@ -449,11 +395,6 @@
                 <i class="fas fa-bolt"></i>
                 Pokémon World
             </a>
-            <div class="mobile-menu">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
         </div>
     </header>
 
@@ -470,7 +411,7 @@
                             <i class="fas fa-book"></i>
                         </div>
                         <h3 class="menu-title">Pokédex</h3>
-                        <p class="menu-description">Thông tin chi tiết về tất cả các loài Pokémon</p>
+                        <p class="menu-description">Thông tin Pokémon</p>
                     </div>
                 </a>
 
@@ -483,7 +424,7 @@
                             <i class="fas fa-gamepad"></i>
                         </div>
                         <h3 class="menu-title">Trò chơi</h3>
-                        <p class="menu-description">Trải nghiệm các trò chơi Pokémon chính thức</p>
+                        <p class="menu-description">Trải nghiệm game</p>
                     </div>
                 </a>
 
@@ -496,7 +437,7 @@
                             <i class="fas fa-newspaper"></i>
                         </div>
                         <h3 class="menu-title">Tin tức</h3>
-                        <p class="menu-description">Cập nhật những thông tin mới nhất về Pokémon</p>
+                        <p class="menu-description">Cập nhật mới</p>
                     </div>
                 </a>
 
@@ -509,7 +450,7 @@
                             <i class="fas fa-shopping-cart"></i>
                         </div>
                         <h3 class="menu-title">Cửa hàng</h3>
-                        <p class="menu-description">Mua sắm các sản phẩm Pokémon chính hãng</p>
+                        <p class="menu-description">Sản phẩm chính hãng</p>
                     </div>
                 </a>
 
@@ -522,7 +463,7 @@
                             <i class="fas fa-users"></i>
                         </div>
                         <h3 class="menu-title">Cộng đồng</h3>
-                        <p class="menu-description">Kết nối với những người hâm mộ Pokémon khác</p>
+                        <p class="menu-description">Kết nối người hâm mộ</p>
                     </div>
                 </a>
 
@@ -535,7 +476,7 @@
                             <i class="fas fa-photo-video"></i>
                         </div>
                         <h3 class="menu-title">Thư viện</h3>
-                        <p class="menu-description">Xem hình ảnh và video về Pokémon</p>
+                        <p class="menu-description">Hình ảnh & video</p>
                     </div>
                 </a>
             </div>
@@ -562,15 +503,5 @@
             </div>
         </div>
     </footer>
-
-    <script>
-        // Mobile menu toggle (for future use if needed)
-        const mobileMenu = document.querySelector('.mobile-menu');
-        
-        mobileMenu.addEventListener('click', function() {
-            // This can be expanded to show a mobile navigation menu if needed
-            console.log('Mobile menu clicked');
-        });
-    </script>
 </body>
 </html>
