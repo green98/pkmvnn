@@ -3,2823 +3,583 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pokémon Moves Pro - Ultimate Database</title>
+    <title>Trang Chủ Pokémon</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primary-color: #00d2ff;
-            --secondary-color: #3a7bd5;
-            --accent-color: #ff006e;
-            --dark-bg: #0a0a12;
-            --darker-bg: #050508;
-            --card-bg: rgba(15, 15, 25, 0.85);
-            --text-color: #ffffff;
-            --text-secondary: #a0a0b8;
-            --border-color: rgba(255, 255, 255, 0.1);
-            --shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
-            --shadow-hover: 0 15px 30px rgba(0, 0, 0, 0.4);
-            --transition: all 0.3s ease;
-            --border-radius: 16px;
-            --physical-color: #ff4757;
-            --special-color: #a55eea;
-            --status-color: #747d8c;
-            --gradient-1: linear-gradient(135deg, #00d2ff, #3a7bd5);
-        }
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
+
         body {
-            font-family: 'Rajdhani', sans-serif;
-            background: var(--darker-bg);
-            color: var(--text-color);
-            line-height: 1.6;
-            overflow-x: hidden;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #ffcb05 0%, #ff3c3c 100%);
             min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            color: #333;
+            overflow-x: hidden;
         }
-        /* Simplified Background */
-        .bg-animation {
+
+        /* Animated background */
+        .background-animation {
             position: fixed;
-            width: 100%;
-            height: 100%;
             top: 0;
             left: 0;
+            width: 100%;
+            height: 100%;
             z-index: -1;
-            background: linear-gradient(135deg, #0a0a12, #1a1a2e, #16213e);
+            overflow: hidden;
         }
-        .cyber-grid {
+
+        .pokeball {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: 
-                linear-gradient(rgba(0, 210, 255, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 210, 255, 0.03) 1px, transparent 1px);
-            background-size: 40px 40px;
-            animation: gridMove 20s linear infinite;
+            width: 100px;
+            height: 100px;
+            background-image: url('https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            opacity: 0.2;
+            animation: float 20s infinite linear;
         }
-        @keyframes gridMove {
-            0% { transform: translate(0, 0); }
-            100% { transform: translate(40px, 40px); }
+
+        .pokeball:nth-child(1) {
+            top: 10%;
+            left: 10%;
+            animation-duration: 25s;
+            animation-delay: 0s;
         }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 15px;
-            position: relative;
-            z-index: 1;
+
+        .pokeball:nth-child(2) {
+            top: 70%;
+            left: 80%;
+            animation-duration: 30s;
+            animation-delay: 2s;
         }
-        /* Header Styles */
+
+        .pokeball:nth-child(3) {
+            top: 40%;
+            left: 5%;
+            animation-duration: 35s;
+            animation-delay: 5s;
+        }
+
+        .pokeball:nth-child(4) {
+            top: 20%;
+            left: 70%;
+            animation-duration: 40s;
+            animation-delay: 1s;
+        }
+
+        .pokeball:nth-child(5) {
+            top: 80%;
+            left: 30%;
+            animation-duration: 22s;
+            animation-delay: 3s;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0) rotate(0deg);
+            }
+            50% {
+                transform: translateY(-20px) rotate(180deg);
+            }
+            100% {
+                transform: translateY(0) rotate(360deg);
+            }
+        }
+
         header {
-            background: linear-gradient(135deg, rgba(10, 10, 18, 0.8), rgba(26, 26, 46, 0.8));
-            backdrop-filter: blur(15px);
-            color: white;
-            padding: 30px 0;
+            padding: 20px;
             text-align: center;
-            border-radius: var(--border-radius);
-            margin-bottom: 25px;
-            box-shadow: var(--shadow-hover);
+            background-color: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             position: relative;
-            overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        header::before {
-            content: "";
-            position: absolute;
-            top: -50%;
-            right: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(0, 210, 255, 0.1) 0%, rgba(0, 210, 255, 0) 70%);
-            transform: rotate(45deg);
-            z-index: 1;
-            animation: pulse 4s ease-in-out infinite;
-        }
-        @keyframes pulse {
-            0%, 100% { opacity: 0.5; }
-            50% { opacity: 0.8; }
-        }
-        .header-content {
-            position: relative;
-            z-index: 2;
-        }
-        h1 {
-            font-family: 'Orbitron', sans-serif;
-            font-size: clamp(1.8rem, 5vw, 3rem);
-            font-weight: 900;
-            margin-bottom: 10px;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            background: linear-gradient(to right, #00d2ff, #3a7bd5, #ff006e);
-            background-size: 200% auto;
-            color: transparent;
-            -webkit-background-clip: text;
-            background-clip: text;
-            animation: gradientShift 5s ease infinite;
-            text-shadow: 0 0 30px rgba(0, 210, 255, 0.5);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        @keyframes gradientShift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-        .subtitle {
-            font-family: 'Rajdhani', sans-serif;
-            font-size: clamp(0.9rem, 2.5vw, 1.3rem);
-            font-weight: 300;
-            opacity: 0.9;
-            letter-spacing: 2px;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            text-shadow: 0 0 10px rgba(0, 210, 255, 0.3);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        /* Search and Filter Section */
-        .search-filter-container {
-            background: linear-gradient(135deg, rgba(15, 15, 25, 0.9) 0%, rgba(10, 10, 18, 0.9) 100%);
-            backdrop-filter: blur(20px);
-            border-radius: var(--border-radius);
-            padding: 25px;
-            margin-bottom: 25px;
-            box-shadow: var(--shadow);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            position: relative;
-        }
-        .search-filter-container::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 4px;
-            background: var(--gradient-1);
-            border-radius: var(--border-radius) var(--border-radius) 0 0;
-        }
-        .search-container {
-            position: relative;
-            margin-bottom: 25px;
             z-index: 10;
-            display: flex;
-            align-items: center;
+            backdrop-filter: blur(5px);
         }
-        .search-input-wrapper {
-            flex: 1;
-            position: relative;
-        }
-        .search-input {
-            width: 100%;
-            padding: 18px 25px;
-            border: 2px solid var(--border-color);
-            border-radius: 50px;
-            font-size: 1.2rem;
-            outline: none;
-            transition: var(--transition);
-            box-shadow: var(--shadow);
-            background: rgba(30, 30, 45, 0.7);
-            color: var(--text-color);
-            font-family: 'Rajdhani', sans-serif;
-            font-weight: 500;
+
+        .logo {
+            font-family: 'Baloo 2', cursive;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #3b4cca;
+            text-shadow: 2px 2px 0 #ffde00;
             letter-spacing: 1px;
-        }
-        .search-input:focus {
-            background: rgba(40, 40, 60, 0.8);
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 4px rgba(0, 210, 255, 0.3), var(--shadow);
-        }
-        .search-btn {
-            background: var(--gradient-1);
-            color: white;
-            border: none;
-            border-radius: 50px;
-            padding: 12px 25px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            box-shadow: 0 8px 20px rgba(0, 210, 255, 0.4);
-            font-family: 'Orbitron', sans-serif;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            font-size: 1rem;
-            margin-left: 10px;
-        }
-        .search-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 10px 25px rgba(0, 210, 255, 0.6);
-        }
-        /* Autocomplete Styles */
-        .autocomplete-container {
-            position: relative;
-        }
-        .autocomplete-dropdown {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            right: 0;
-            background: rgba(15, 15, 25, 0.95);
-            backdrop-filter: blur(15px);
-            border-radius: 16px;
-            box-shadow: var(--shadow-hover);
-            z-index: 1000;
-            max-height: 250px;
-            overflow-y: auto;
-            margin-top: 10px;
-            display: none;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            animation: slideDown 0.3s ease;
-        }
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        .autocomplete-item {
-            padding: 15px 20px;
-            cursor: pointer;
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            border-bottom: 1px solid var(--border-color);
-        }
-        .autocomplete-item:last-child {
-            border-bottom: none;
-        }
-        .autocomplete-item:hover, .autocomplete-item.active {
-            background: rgba(0, 210, 255, 0.15);
-            transform: translateX(5px);
-        }
-        .autocomplete-item-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
-            font-size: 1.1rem;
-            font-weight: bold;
-            box-shadow: var(--shadow);
-            flex-shrink: 0;
+            gap: 10px;
         }
-        .autocomplete-item-name {
+
+        .logo i {
+            font-size: 2.2rem;
+            color: #ff3c3c;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .tagline {
+            font-size: 1rem;
+            color: #555;
+            margin-top: 5px;
+        }
+
+        main {
             flex: 1;
-            font-weight: 600;
-            font-size: 1.1rem;
-            font-family: 'Rajdhani', sans-serif;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        .autocomplete-item-type {
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: white;
-            box-shadow: var(--shadow);
-            font-family: 'Orbitron', sans-serif;
-            text-transform: uppercase;
-            flex-shrink: 0;
-        }
-        .autocomplete-highlight {
-            font-weight: 700;
-            color: var(--primary-color);
-        }
-        .filters {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-        }
-        .filter-group {
             display: flex;
-            flex-direction: column;
-        }
-        .filter-group label {
-            font-weight: 600;
-            margin-bottom: 10px;
-            color: var(--text-secondary);
-            font-size: 1rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            font-family: 'Orbitron', sans-serif;
-        }
-        .filter-select, .sort-select {
-            padding: 12px 18px;
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            font-size: 1rem;
-            outline: none;
-            transition: var(--transition);
-            background-color: rgba(30, 30, 45, 0.7);
-            color: var(--text-color);
-            font-family: 'Rajdhani', sans-serif;
-            font-weight: 500;
-            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
-            cursor: pointer;
-        }
-        .filter-select:focus, .sort-select:focus {
-            background: rgba(40, 40, 60, 0.8);
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(0, 210, 255, 0.2), inset 0 2px 4px rgba(0, 0, 0, 0.2);
-        }
-        .view-options {
-            display: flex;
-            justify-content: space-between;
+            justify-content: center;
             align-items: center;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-            gap: 20px;
+            padding: 40px 20px;
         }
-        .view-toggle {
-            display: flex;
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: var(--shadow);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-        }
-        .view-btn {
-            background: none;
-            border: none;
-            padding: 12px 18px;
-            cursor: pointer;
-            transition: var(--transition);
-            color: var(--text-secondary);
-            font-size: 1.1rem;
-        }
-        .view-btn.active {
-            background: var(--gradient-1);
-            color: white;
-        }
-        .sort-container {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        /* Results Section */
-        .results-container {
-            margin-bottom: 25px;
-            min-height: 400px;
-        }
-        .moves-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 25px;
-        }
-        .moves-table {
+
+        .container {
             width: 100%;
-            border-collapse: collapse;
-            background: var(--card-bg);
-            backdrop-filter: blur(15px);
-            border-radius: var(--border-radius);
-            overflow: hidden;
-            box-shadow: var(--shadow);
+            max-width: 1200px;
+            margin: 0 auto;
         }
-        .moves-table th {
-            background: var(--gradient-1);
-            color: white;
-            padding: 15px 12px;
-            text-align: left;
-            font-weight: 700;
-            font-size: 1rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            font-family: 'Orbitron', sans-serif;
-        }
-        .moves-table td {
-            padding: 15px 12px;
-            border-bottom: 1px solid var(--border-color);
-            font-size: 1rem;
-        }
-        .moves-table tr:last-child td {
-            border-bottom: none;
-        }
-        .moves-table tr:hover {
-            background-color: rgba(0, 210, 255, 0.08);
-        }
-        /* Move Card */
-        .move-card {
-            background: linear-gradient(135deg, rgba(15, 15, 25, 0.9) 0%, rgba(10, 10, 18, 0.9) 100%);
-            backdrop-filter: blur(20px);
-            border-radius: var(--border-radius);
-            overflow: hidden;
-            box-shadow: var(--shadow);
-            transition: var(--transition);
+
+        .hero-section {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 16px;
+            padding: 40px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
             display: flex;
-            flex-direction: column;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            height: 100%;
+            align-items: center;
+            backdrop-filter: blur(5px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-content {
+            flex: 1;
+            z-index: 2;
+        }
+
+        .hero-title {
+            font-family: 'Baloo 2', cursive;
+            font-size: 2.5rem;
+            color: #3b4cca;
+            margin-bottom: 20px;
             position: relative;
         }
-        .move-card::before {
-            content: "";
+
+        .hero-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(90deg, #3b4cca, #ffde00, #ff3c3c);
+            border-radius: 2px;
+        }
+
+        .hero-description {
+            font-size: 1.1rem;
+            color: #555;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+
+        .hero-image {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .pokemon-image {
+            width: 300px;
+            height: 300px;
+            object-fit: contain;
+            filter: drop-shadow(0 10px 15px rgba(0, 0, 0, 0.2));
+            animation: float-pokemon 4s ease-in-out infinite;
+        }
+
+        @keyframes float-pokemon {
+            0% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-15px);
+            }
+            100% {
+                transform: translateY(0);
+            }
+        }
+
+        .button-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .poke-button {
+            background-color: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            transition: all 0.4s ease;
+            cursor: pointer;
+            text-decoration: none;
+            color: #333;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .poke-button:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+        }
+
+        .poke-button-image {
+            height: 180px;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+
+        .poke-button-image::after {
+            content: '';
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
-            height: 5px;
-            background: var(--gradient-1);
-            border-radius: var(--border-radius) var(--border-radius) 0 0;
+            height: 100%;
+            background: linear-gradient(to bottom, rgba(0,0,0,0) 60%, rgba(0,0,0,0.7) 100%);
         }
-        .move-card:hover {
-            transform: translateY(-10px) scale(1.02);
-            box-shadow: var(--shadow-hover);
-        }
-        .move-header {
-            padding: 18px 20px;
-            color: white;
-            position: relative;
-            overflow: hidden;
-        }
-        .move-header::after {
-            content: "";
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 8px;
-            background: rgba(255, 255, 255, 0.2);
-        }
-        .move-name {
-            font-family: 'Orbitron', sans-serif;
-            font-size: clamp(0.9rem, 2.5vw, 1.3rem);
-            font-weight: 700;
-            margin-bottom: 8px;
-            text-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-            line-height: 1.2;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        .move-type {
-            display: inline-block;
-            padding: 6px 15px;
-            border-radius: 20px;
-            font-weight: 600;
-            font-size: 0.9rem;
-            background: rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(5px);
-            box-shadow: var(--shadow);
-            font-family: 'Orbitron', sans-serif;
-            text-transform: uppercase;
-        }
-        .move-details {
-            padding: 20px;
+
+        .poke-button-content {
+            padding: 25px;
             flex-grow: 1;
             display: flex;
             flex-direction: column;
         }
-        .detail-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-        .detail-item {
+
+        .poke-button-icon {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 40px;
+            height: 40px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 50%;
             display: flex;
-            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 2;
         }
-        .detail-label {
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-            margin-bottom: 5px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            font-weight: 600;
-            font-family: 'Orbitron', sans-serif;
+
+        .poke-button-icon i {
+            font-size: 1.2rem;
         }
-        .detail-value {
-            font-weight: 500;
-            font-size: 1.1rem;
-            font-family: 'Rajdhani', sans-serif;
+
+        .poke-button.pokedex .poke-button-icon i {
+            color: #ff3c3c;
         }
-        .accuracy-bar {
-            height: 12px;
-            width: 100%;
-            background: rgba(255, 255, 255, 0.08);
-            border-radius: 6px;
-            margin-top: 8px;
-            overflow: hidden;
-            position: relative;
-            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+
+        .poke-button.games .poke-button-icon i {
+            color: #ffde00;
         }
-        .accuracy-fill {
-            height: 100%;
-            border-radius: 6px;
-            background: var(--gradient-1);
-            box-shadow: 0 0 15px rgba(0, 210, 255, 0.7);
-            transition: width 1s ease;
+
+        .poke-button.news .poke-button-icon i {
+            color: #36918c;
         }
-        .effect-box {
-            background: rgba(255, 255, 255, 0.03);
-            padding: 15px;
-            border-radius: 12px;
-            margin-top: auto;
-            border-left: 5px solid var(--primary-color);
-            box-shadow: var(--shadow);
+
+        .poke-button.shop .poke-button-icon i {
+            color: #9c27b0;
         }
-        .effect-title {
-            font-weight: 600;
-            margin-bottom: 8px;
-            color: var(--primary-color);
-            font-size: 1rem;
-            font-family: 'Orbitron', sans-serif;
-            text-transform: uppercase;
+
+        .poke-button.community .poke-button-icon i {
+            color: #ff9800;
         }
-        .pokemon-learners {
-            margin-top: 15px;
+
+        .poke-button.media .poke-button-icon i {
+            color: #4caf50;
         }
-        .pokemon-learners-title {
+
+        .poke-button h3 {
+            font-size: 1.4rem;
             font-weight: 600;
             margin-bottom: 10px;
-            color: var(--primary-color);
-            font-size: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-family: 'Orbitron', sans-serif;
-            text-transform: uppercase;
+            color: #333;
         }
-        .pokemon-icons {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
+
+        .poke-button p {
+            font-size: 0.95rem;
+            color: #666;
+            line-height: 1.5;
+            flex-grow: 1;
         }
-        .pokemon-icon {
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.05);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: var(--shadow);
-            cursor: pointer;
-            transition: var(--transition);
-            position: relative;
-            overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-        }
-        .pokemon-icon:hover {
-            transform: scale(1.15);
-            box-shadow: var(--shadow-hover);
-        }
-        .pokemon-icon img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            image-rendering: pixelated;
-        }
-        .pokemon-tooltip {
-            position: absolute;
-            bottom: 50px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0, 0, 0, 0.9);
-            color: white;
-            padding: 8px 12px;
-            border-radius: 8px;
-            font-size: 0.9rem;
-            white-space: nowrap;
-            opacity: 0;
-            pointer-events: none;
-            transition: var(--transition);
-            z-index: 100;
-            font-family: 'Rajdhani', sans-serif;
+
+        .poke-button-cta {
+            display: inline-block;
+            margin-top: 15px;
             font-weight: 500;
-            box-shadow: var(--shadow);
+            color: #3b4cca;
+            transition: all 0.3s ease;
         }
-        .pokemon-icon:hover .pokemon-tooltip {
-            opacity: 1;
+
+        .poke-button:hover .poke-button-cta {
+            transform: translateX(5px);
         }
-        .more-pokemon {
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.1);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: var(--shadow);
-            cursor: pointer;
-            transition: var(--transition);
-            position: relative;
-            overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            color: var(--primary-color);
-            font-weight: bold;
-            font-size: 1.3rem;
-        }
-        .more-pokemon:hover {
-            transform: scale(1.15);
-            box-shadow: var(--shadow-hover);
-            background: rgba(0, 210, 255, 0.2);
-        }
-        .loading {
+
+        footer {
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 30px 20px;
             text-align: center;
-            padding: 50px;
-            font-size: 1.3rem;
-            color: var(--text-secondary);
-        }
-        .no-results {
-            text-align: center;
-            padding: 60px 20px;
-            font-size: 1.3rem;
-            color: var(--text-secondary);
-            background: rgba(255, 255, 255, 0.02);
-            border-radius: 20px;
-            border: 1px dashed var(--border-color);
+            color: #555;
+            font-size: 0.9rem;
+            box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.1);
             backdrop-filter: blur(5px);
         }
-        .no-results i {
-            font-size: 4rem;
-            margin-bottom: 20px;
-            color: var(--accent-color);
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
         }
-        /* Pagination */
-        .pagination {
+
+        .social-links {
+            margin-top: 20px;
             display: flex;
             justify-content: center;
-            margin-top: 30px;
-            gap: 10px;
-            flex-wrap: wrap;
+            gap: 20px;
         }
-        .page-btn {
+
+        .social-links a {
+            color: #3b4cca;
+            font-size: 1.8rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             width: 45px;
             height: 45px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: linear-gradient(135deg, rgba(30, 30, 45, 0.8) 0%, rgba(20, 20, 35, 0.8) 100%);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 10px;
-            cursor: pointer;
-            transition: var(--transition);
-            color: var(--text-color);
-            font-weight: 600;
-            box-shadow: var(--shadow);
-            font-size: 1.1rem;
-            font-family: 'Orbitron', sans-serif;
-        }
-        .page-btn:hover, .page-btn.active {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow-hover);
-            color: white;
-            border-color: transparent;
-            background: var(--gradient-1);
-        }
-        .page-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-        /* Type Colors */
-        .normal { background-color: #A8A878; }
-        .fire { background-color: #F08030; }
-        .water { background-color: #6890F0; }
-        .electric { background-color: #F8D030; }
-        .grass { background-color: #78C850; }
-        .ice { background-color: #98D8D8; }
-        .fighting { background-color: #C03028; }
-        .poison { background-color: #A040A0; }
-        .ground { background-color: #E0C068; }
-        .flying { background-color: #A890F0; }
-        .psychic { background-color: #F85888; }
-        .bug { background-color: #A8B820; }
-        .rock { background-color: #B8A038; }
-        .ghost { background-color: #705898; }
-        .dragon { background-color: #7038F8; }
-        .dark { background-color: #705848; }
-        .steel { background-color: #B8B8D0; }
-        .fairy { background-color: #EE99AC; }
-        /* Category Colors */
-        .category-physical {
-            background-color: var(--physical-color);
-            color: white;
-            padding: 5px 10px;
-            border-radius: 6px;
-            display: inline-block;
-        }
-        .category-physical::before {
-            content: '\f3e5';
-            font-family: 'Font Awesome 6 Free';
-            font-weight: 900;
-            margin-right: 6px;
-        }
-        .category-special {
-            background-color: var(--special-color);
-            color: white;
-            padding: 5px 10px;
-            border-radius: 6px;
-            display: inline-block;
-        }
-        .category-special::before {
-            content: '\f0e7';
-            font-family: 'Font Awesome 6 Free';
-            font-weight: 900;
-            margin-right: 6px;
-        }
-        .category-status {
-            background-color: var(--status-color);
-            color: white;
-            padding: 5px 10px;
-            border-radius: 6px;
-            display: inline-block;
-        }
-        .category-status::before {
-            content: '\f15c';
-            font-family: 'Font Awesome 6 Free';
-            font-weight: 900;
-            margin-right: 6px;
-        }
-        /* Toast Notification */
-        .toast {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            background: linear-gradient(135deg, rgba(20, 20, 30, 0.95) 0%, rgba(10, 10, 18, 0.95) 100%);
-            backdrop-filter: blur(20px);
-            padding: 18px 25px;
-            border-radius: 15px;
-            box-shadow: var(--shadow-hover);
-            display: flex;
-            align-items: center;
-            gap: 18px;
-            transform: translateX(500px) scale(0.95);
-            transition: var(--transition);
-            z-index: 1000;
-            max-width: 400px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        .toast.show {
-            transform: translateX(0) scale(1);
-        }
-        .toast-icon {
-            font-size: 1.8rem;
-        }
-        .toast-success .toast-icon {
-            color: #00ff88;
-        }
-        .toast-error .toast-icon {
-            color: var(--accent-color);
-        }
-        .toast-info .toast-icon {
-            color: var(--primary-color);
-        }
-        .toast-message {
-            flex: 1;
-            font-size: 1.1rem;
-            font-family: 'Rajdhani', sans-serif;
-            font-weight: 500;
-        }
-        .toast-close {
-            background: none;
-            border: none;
-            font-size: 1.4rem;
-            cursor: pointer;
-            color: var(--text-secondary);
-        }
-        /* Modal Styles */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.85);
-            z-index: 2000;
-            padding: 20px;
-            backdrop-filter: blur(8px);
-            overflow-y: auto;
-        }
-        .modal.show {
-            display: flex;
-            animation: fadeIn 0.3s ease;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        .modal-content {
-            background: linear-gradient(135deg, rgba(15, 15, 25, 0.9) 0%, rgba(10, 10, 18, 0.9) 100%);
-            backdrop-filter: blur(20px);
-            border-radius: var(--border-radius);
-            max-width: 750px;
-            width: 100%;
-            max-height: 85vh;
-            margin: auto;
-            overflow-y: auto;
-            position: relative;
-            animation: modalFadeIn 0.4s ease;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-        }
-        @keyframes modalFadeIn {
-            from {
-                opacity: 0;
-                transform: scale(0.9);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
-        }
-        .modal-header {
-            padding: 20px;
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: linear-gradient(to right, rgba(0, 210, 255, 0.1), rgba(58, 123, 213, 0.1));
-            position: sticky;
-            top: 0;
-            z-index: 10;
-        }
-        .modal-title {
-            font-family: 'Orbitron', sans-serif;
-            font-size: clamp(1.2rem, 4vw, 1.8rem);
-            font-weight: 700;
-            background: var(--gradient-1);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            max-width: 80%;
-        }
-        .modal-close {
-            background: none;
-            border: none;
-            font-size: 1.6rem;
-            cursor: pointer;
-            color: var(--text-secondary);
-            transition: var(--transition);
-        }
-        .modal-close:hover {
-            color: var(--accent-color);
-            transform: rotate(90deg);
-        }
-        .modal-body {
-            padding: 20px;
-        }
-        .modal-detail-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-        .modal-detail-item {
-            display: flex;
-            flex-direction: column;
-        }
-        .modal-detail-label {
-            font-weight: 600;
-            margin-bottom: 8px;
-            color: var(--text-secondary);
-            font-size: 0.95rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            font-family: 'Orbitron', sans-serif;
-        }
-        .modal-detail-value {
-            font-size: 1.1rem;
-            font-family: 'Rajdhani', sans-serif;
-            font-weight: 500;
-        }
-        .modal-accuracy-container {
-            margin-top: 8px;
-        }
-        .modal-accuracy-bar {
-            height: 12px;
-            width: 100%;
-            background: rgba(255, 255, 255, 0.08);
-            border-radius: 6px;
-            overflow: hidden;
-            position: relative;
-            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
-        }
-        .modal-accuracy-fill {
-            height: 100%;
-            border-radius: 6px;
-            background: var(--gradient-1);
-            box-shadow: 0 0 15px rgba(0, 210, 255, 0.7);
-            transition: width 0.7s ease;
-        }
-        .modal-effect-box {
-            background: rgba(255, 255, 255, 0.03);
-            padding: 15px;
-            border-radius: 12px;
-            margin-top: 15px;
-            border-left: 5px solid var(--primary-color);
-            box-shadow: var(--shadow);
-        }
-        .modal-effect-title {
-            font-weight: 600;
-            margin-bottom: 10px;
-            color: var(--primary-color);
-            font-size: 1rem;
-            font-family: 'Orbitron', sans-serif;
-            text-transform: uppercase;
-        }
-        /* Pokemon Learners Section in Modal */
-        .pokemon-learners-modal {
-            margin-top: 20px;
-        }
-        .pokemon-learners-modal-title {
-            font-weight: 600;
-            margin-bottom: 12px;
-            color: var(--primary-color);
-            font-size: 1.1rem;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            font-family: 'Orbitron', sans-serif;
-            text-transform: uppercase;
-        }
-        .pokemon-learners-count {
-            background: rgba(0, 210, 255, 0.2);
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-size: 0.9rem;
-        }
-        .pokemon-grid-container {
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            max-height: 250px;
-            overflow-y: auto;
-            padding: 12px;
-        }
-        .pokemon-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
-            gap: 12px;
-        }
-        .pokemon-card {
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: var(--shadow);
-            transition: var(--transition);
-            cursor: pointer;
-            text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-        }
-        .pokemon-card:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow-hover);
-            background: rgba(0, 210, 255, 0.1);
-        }
-        .pokemon-card-image {
-            width: 100%;
-            height: 80px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: rgba(255, 255, 255, 0.02);
-            padding: 12px;
-        }
-        .pokemon-card-image img {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
-            image-rendering: pixelated;
-        }
-        .pokemon-card-name {
-            padding: 8px;
-            font-weight: 600;
-            font-size: 0.85rem;
-            font-family: 'Rajdhani', sans-serif;
-            background: rgba(255, 255, 255, 0.02);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        .pokemon-types {
-            display: flex;
-            justify-content: center;
-            gap: 5px;
-            padding: 0 8px 8px;
-        }
-        .pokemon-type {
-            width: 18px;
-            height: 18px;
             border-radius: 50%;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            position: relative;
+            background-color: rgba(255, 255, 255, 0.7);
         }
-        .pokemon-type-label {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: white;
-            font-size: 0.6rem;
-            font-weight: bold;
-            text-shadow: 0 0 2px rgba(0, 0, 0, 0.8);
+
+        .social-links a:hover {
+            color: #ff3c3c;
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
-        .pokemon-loading {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 120px;
-            color: var(--text-secondary);
-        }
-        .pokemon-loading i {
-            margin-right: 10px;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        /* Filter section for Pokemon */
-        .pokemon-filter {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-            padding: 0 8px;
-        }
-        .pokemon-search {
-            flex: 1;
-            background: rgba(30, 30, 45, 0.7);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 20px;
-            padding: 8px 15px;
-            color: var(--text-color);
-            font-family: 'Rajdhani', sans-serif;
-            font-size: 1rem;
-            outline: none;
-            transition: var(--transition);
-        }
-        .pokemon-search:focus {
-            background: rgba(40, 40, 60, 0.8);
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(0, 210, 255, 0.2);
-        }
-        .pokemon-filter-buttons {
-            display: flex;
-            gap: 10px;
-        }
-        .pokemon-filter-btn {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 8px;
-            padding: 8px 12px;
-            color: var(--text-color);
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .pokemon-filter-btn:hover {
-            background: rgba(0, 210, 255, 0.2);
-            border-color: var(--primary-color);
-        }
-        .pokemon-filter-btn.active {
-            background: rgba(0, 210, 255, 0.3);
-            border-color: var(--primary-color);
-        }
-        /* Move Flags */
-        .move-flags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 12px;
-        }
-        .move-flag {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            padding: 6px 12px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-        }
-        .move-flag i {
-            font-size: 0.8rem;
-        }
-        /* Stat Changes */
-        .stat-changes {
-            margin-top: 12px;
-        }
-        .stat-change-item {
-            display: flex;
-            align-items: center;
-            margin-bottom: 8px;
-            font-size: 1rem;
-        }
-        .stat-change-icon {
-            width: 24px;
-            text-align: center;
-            margin-right: 10px;
-        }
-        .stat-change-up {
-            color: #00ff88;
-        }
-        .stat-change-down {
-            color: #ff4757;
-        }
-        /* Pokemon Moves Modal */
-        .pokemon-moves-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 18px;
-            font-size: 0.95rem;
-        }
-        .pokemon-moves-table th {
-            background: var(--gradient-1);
-            color: white;
-            padding: 12px;
-            text-align: left;
-            font-weight: 600;
-            font-family: 'Orbitron', sans-serif;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        .pokemon-moves-table td {
-            padding: 10px 12px;
-            border-bottom: 1px solid var(--border-color);
-        }
-        .pokemon-moves-table tr:last-child td {
-            border-bottom: none;
-        }
-        .pokemon-moves-table tr:hover {
-            background-color: rgba(0, 210, 255, 0.08);
-        }
-        .pokemon-moves-table .move-name-cell {
-            font-weight: 600;
-            font-family: 'Rajdhani', sans-serif;
-        }
-        .pokemon-moves-table .type-cell {
-            width: 70px;
-        }
-        .pokemon-moves-table .power-cell, 
-        .pokemon-moves-table .accuracy-cell, 
-        .pokemon-moves-table .pp-cell,
-        .pokemon-moves-table .priority-cell {
-            width: 60px;
-            text-align: center;
-        }
-        
-        /* Responsive Design */
+
         @media (max-width: 992px) {
-            .moves-grid {
-                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            .hero-section {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .hero-content {
+                margin-bottom: 30px;
+            }
+
+            .hero-title::after {
+                left: 50%;
+                transform: translateX(-50%);
+            }
+
+            .pokemon-image {
+                width: 250px;
+                height: 250px;
             }
         }
+
         @media (max-width: 768px) {
-            h1 {
-                font-size: clamp(1.5rem, 6vw, 2.2rem);
+            .logo {
+                font-size: 2rem;
             }
-            
-            .subtitle {
-                font-size: clamp(0.8rem, 3vw, 1rem);
+
+            .logo i {
+                font-size: 1.8rem;
             }
-            
-            .view-options {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 15px;
+
+            .hero-title {
+                font-size: 2rem;
             }
-            
-            .moves-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .detail-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .filters {
-                grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-                gap: 15px;
-            }
-            
-            .autocomplete-dropdown {
-                max-height: 200px;
-            }
-            
-            .autocomplete-item {
-                padding: 12px 15px;
-            }
-            
-            .autocomplete-item-name {
+
+            .hero-description {
                 font-size: 1rem;
             }
-            
-            .search-container {
-                flex-direction: column;
+
+            .button-grid {
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                gap: 20px;
             }
-            
-            .search-btn {
-                margin-left: 0;
-                margin-top: 10px;
-                align-self: center;
+
+            .poke-button-image {
+                height: 150px;
             }
-            
-            .modal-detail-grid {
-                grid-template-columns: 1fr;
+
+            .poke-button-content {
+                padding: 20px;
             }
-            
-            .pokemon-grid {
-                grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-            }
-            
-            .pokemon-card-image {
-                height: 70px;
-            }
-            
-            .pokemon-card-name {
-                font-size: 0.8rem;
-                padding: 6px;
-            }
-            
-            .pokemon-types {
-                padding: 0 6px 6px;
-            }
-            
-            .pokemon-moves-table {
-                font-size: 0.9rem;
-            }
-            
-            .pokemon-moves-table th,
-            .pokemon-moves-table td {
-                padding: 8px;
+
+            .poke-button h3 {
+                font-size: 1.2rem;
             }
         }
-        
+
         @media (max-width: 480px) {
-            .modal-content {
-                max-width: 98vw;
-                max-height: 95vh;
-                margin: 5px auto;
+            .button-grid {
+                grid-template-columns: 1fr;
             }
-            
-            .modal-title {
-                font-size: clamp(0.9rem, 3.5vw, 1.1rem);
-                max-width: 60%;
+
+            .hero-section {
+                padding: 25px;
             }
-            
-            .modal-header {
-                padding: 12px;
-            }
-            
-            .modal-body {
-                padding: 12px;
-            }
-            
-            .modal-detail-item {
-                margin-bottom: 12px;
-            }
-            
-            .pokemon-grid {
-                grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
-                gap: 8px;
-            }
-            
-            .pokemon-card-image {
-                height: 60px;
-                padding: 8px;
-            }
-            
-            .pokemon-card-name {
-                font-size: 0.75rem;
-                padding: 4px;
-            }
-            
-            .pokemon-types {
-                padding: 0 4px 4px;
-                gap: 3px;
-            }
-            
-            .pokemon-moves-table {
-                font-size: 0.85rem;
-            }
-            
-            .pokemon-moves-table th,
-            .pokemon-moves-table td {
-                padding: 6px 4px;
-            }
-            
-            .pokemon-moves-table .type-cell {
-                width: 60px;
-            }
-            
-            .pokemon-moves-table .power-cell, 
-            .pokemon-moves-table .accuracy-cell, 
-            .pokemon-moves-table .pp-cell,
-            .pokemon-moves-table .priority-cell {
-                width: 50px;
+
+            .pokemon-image {
+                width: 200px;
+                height: 200px;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Simplified Background -->
-    <div class="bg-animation">
-        <div class="cyber-grid"></div>
+    <div class="background-animation">
+        <div class="pokeball"></div>
+        <div class="pokeball"></div>
+        <div class="pokeball"></div>
+        <div class="pokeball"></div>
+        <div class="pokeball"></div>
     </div>
-    <div class="container">
-        <header>
-            <div class="header-content">
-                <h1><i class="fas fa-dice-d20"></i> Pokémon Moves Pro</h1>
-                <p class="subtitle">Ultimate Database - Gen 1 đến Gen 9</p>
-            </div>
-        </header>
-        
-        <div class="search-filter-container">
-            <div class="search-container">
-                <div class="search-input-wrapper">
-                    <input type="text" id="searchInput" class="search-input" placeholder="Tìm kiếm move..." autocomplete="off">
-                    <div class="autocomplete-dropdown" id="autocompleteDropdown"></div>
+
+    <header>
+        <div class="logo">
+            <i class="fas fa-bolt"></i>
+            Pokémon World
+            <i class="fas fa-bolt"></i>
+        </div>
+        <div class="tagline">Khám phá thế giới Pokémon đầy màu sắc!</div>
+    </header>
+
+    <main>
+        <div class="container">
+            <div class="hero-section">
+                <div class="hero-content">
+                    <h1 class="hero-title">Chào mừng đến với Thế giới Pokémon!</h1>
+                    <p class="hero-description">Hãy bắt đầu hành trình của bạn với những người bạn Pokémon và khám phá vô vàn điều thú vị đang chờ đợi. Trở thành Huấn luyện viên Pokémon xuất sắc nhất!</p>
                 </div>
-                <button id="searchBtn" class="search-btn">
-                    <i class="fas fa-search"></i> Tìm
-                </button>
-            </div>
-            
-            <div class="filters">
-                <div class="filter-group">
-                    <label for="typeFilter">Loại:</label>
-                    <select id="typeFilter" class="filter-select">
-                        <option value="">Tất cả</option>
-                        <option value="normal">Normal</option>
-                        <option value="fire">Fire</option>
-                        <option value="water">Water</option>
-                        <option value="electric">Electric</option>
-                        <option value="grass">Grass</option>
-                        <option value="ice">Ice</option>
-                        <option value="fighting">Fighting</option>
-                        <option value="poison">Poison</option>
-                        <option value="ground">Ground</option>
-                        <option value="flying">Flying</option>
-                        <option value="psychic">Psychic</option>
-                        <option value="bug">Bug</option>
-                        <option value="rock">Rock</option>
-                        <option value="ghost">Ghost</option>
-                        <option value="dragon">Dragon</option>
-                        <option value="dark">Dark</option>
-                        <option value="steel">Steel</option>
-                        <option value="fairy">Fairy</option>
-                    </select>
-                </div>
-                
-                <div class="filter-group">
-                    <label for="categoryFilter">Phân loại:</label>
-                    <select id="categoryFilter" class="filter-select">
-                        <option value="">Tất cả</option>
-                        <option value="physical">Physical</option>
-                        <option value="special">Special</option>
-                        <option value="status">Status</option>
-                    </select>
-                </div>
-                
-                <div class="filter-group">
-                    <label for="generationFilter">Thế hệ:</label>
-                    <select id="generationFilter" class="filter-select">
-                        <option value="">Tất cả</option>
-                        <option value="generation-i">Gen 1</option>
-                        <option value="generation-ii">Gen 2</option>
-                        <option value="generation-iii">Gen 3</option>
-                        <option value="generation-iv">Gen 4</option>
-                        <option value="generation-v">Gen 5</option>
-                        <option value="generation-vi">Gen 6</option>
-                        <option value="generation-vii">Gen 7</option>
-                        <option value="generation-viii">Gen 8</option>
-                        <option value="generation-ix">Gen 9</option>
-                    </select>
-                </div>
-                
-                <div class="filter-group">
-                    <label for="powerFilter">Sức mạnh:</label>
-                    <select id="powerFilter" class="filter-select">
-                        <option value="">Tất cả</option>
-                        <option value="status">Status</option>
-                        <option value="low">Low (1-40)</option>
-                        <option value="medium">Medium (41-80)</option>
-                        <option value="high">High (81-120)</option>
-                        <option value="very-high">Very High (121+)</option>
-                    </select>
+                <div class="hero-image">
+                    <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/25.png" alt="Pikachu" class="pokemon-image">
                 </div>
             </div>
+
+            <div class="button-grid">
+                <a href="#" class="poke-button pokedex">
+                    <div class="poke-button-image" style="background-image: url('https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/143.png');">
+                        <div class="poke-button-icon">
+                            <i class="fas fa-book"></i>
+                        </div>
+                    </div>
+                    <div class="poke-button-content">
+                        <h3>Pokédex</h3>
+                        <p>Khám phá thông tin chi tiết về tất cả các loài Pokémon từ thế hệ đầu tiên đến thế hệ mới nhất.</p>
+                        <span class="poke-button-cta">Khám phá ngay <i class="fas fa-arrow-right"></i></span>
+                    </div>
+                </a>
+
+                <a href="#" class="poke-button games">
+                    <div class="poke-button-image" style="background-image: url('https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/6.png');">
+                        <div class="poke-button-icon">
+                            <i class="fas fa-gamepad"></i>
+                        </div>
+                    </div>
+                    <div class="poke-button-content">
+                        <h3>Trò chơi</h3>
+                        <p>Trải nghiệm các trò chơi Pokémon chính thức và khám phá thế giới ảo đầy màu sắc.</p>
+                        <span class="poke-button-cta">Chơi ngay <i class="fas fa-arrow-right"></i></span>
+                    </div>
+                </a>
+
+                <a href="#" class="poke-button news">
+                    <div class="poke-button-image" style="background-image: url('https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/144.png');">
+                        <div class="poke-button-icon">
+                            <i class="fas fa-newspaper"></i>
+                        </div>
+                    </div>
+                    <div class="poke-button-content">
+                        <h3>Tin tức</h3>
+                        <p>Cập nhật những thông tin mới nhất về sự kiện Pokémon, trò chơi và phim ảnh.</p>
+                        <span class="poke-button-cta">Đọc tin <i class="fas fa-arrow-right"></i></span>
+                    </div>
+                </a>
+
+                <a href="#" class="poke-button shop">
+                    <div class="poke-button-image" style="background-image: url('https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/658.png');">
+                        <div class="poke-button-icon">
+                            <i class="fas fa-shopping-cart"></i>
+                        </div>
+                    </div>
+                    <div class="poke-button-content">
+                        <h3>Cửa hàng</h3>
+                        <p>Mua sắm các sản phẩm Pokémon chính hãng từ đồ chơi, quần áo đến phụ kiện.</p>
+                        <span class="poke-button-cta">Mua sắm <i class="fas fa-arrow-right"></i></span>
+                    </div>
+                </a>
+
+                <a href="#" class="poke-button community">
+                    <div class="poke-button-image" style="background-image: url('https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/150.png');">
+                        <div class="poke-button-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                    </div>
+                    <div class="poke-button-content">
+                        <h3>Cộng đồng</h3>
+                        <p>Kết nối với những người hâm mộ Pokémon khác, chia sẻ kinh nghiệm và chiến lược.</p>
+                        <span class="poke-button-cta">Tham gia <i class="fas fa-arrow-right"></i></span>
+                    </div>
+                </a>
+
+                <a href="#" class="poke-button media">
+                    <div class="poke-button-image" style="background-image: url('https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/700.png');">
+                        <div class="poke-button-icon">
+                            <i class="fas fa-photo-video"></i>
+                        </div>
+                    </div>
+                    <div class="poke-button-content">
+                        <h3>Thư viện</h3>
+                        <p>Xem hình ảnh và video chất lượng cao về Pokémon, trận đấu và sự kiện đặc biệt.</p>
+                        <span class="poke-button-cta">Xem ngay <i class="fas fa-arrow-right"></i></span>
+                    </div>
+                </a>
+            </div>
         </div>
-        
-        <div class="view-options">
-            <div class="view-toggle">
-                <button id="gridViewBtn" class="view-btn active">
-                    <i class="fas fa-th"></i>
-                </button>
-                <button id="tableViewBtn" class="view-btn">
-                    <i class="fas fa-list"></i>
-                </button>
-            </div>
-            
-            <div class="sort-container">
-                <label for="sortSelect">Sắp xếp:</label>
-                <select id="sortSelect" class="sort-select">
-                    <option value="id">ID</option>
-                    <option value="name">Tên</option>
-                    <option value="type">Loại</option>
-                    <option value="power">Sức mạnh</option>
-                    <option value="pp">PP</option>
-                    <option value="generation">Thế hệ</option>
-                </select>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2023 Pokémon World. Tất cả quyền được bảo lưu. Pokémon là thương hiệu của Nintendo.</p>
+            <div class="social-links">
+                <a href="#"><i class="fab fa-facebook"></i></a>
+                <a href="#"><i class="fab fa-twitter"></i></a>
+                <a href="#"><i class="fab fa-instagram"></i></a>
+                <a href="#"><i class="fab fa-youtube"></i></a>
+                <a href="#"><i class="fab fa-tiktok"></i></a>
             </div>
         </div>
-        
-        <div class="results-container" id="resultsContainer">
-            <div class="loading">
-                <i class="fas fa-spinner fa-spin"></i>
-                <p>Đang tải dữ liệu...</p>
-            </div>
-        </div>
-        
-        <div class="pagination" id="pagination"></div>
-    </div>
-    
-    <!-- Toast Notification -->
-    <div id="toast" class="toast">
-        <div class="toast-icon"><i class="fas fa-check-circle"></i></div>
-        <div class="toast-message"></div>
-        <button class="toast-close"><i class="fas fa-times"></i></button>
-    </div>
-    
-    <!-- Move Detail Modal -->
-    <div id="moveModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 class="modal-title" id="modalTitle">Move Details</h2>
-                <button class="modal-close" id="modalClose"><i class="fas fa-times"></i></button>
-            </div>
-            <div class="modal-body" id="modalBody">
-                <!-- Modal content will be inserted here -->
-            </div>
-        </div>
-    </div>
-    
-    <!-- Pokemon Moves Modal -->
-    <div id="pokemonMovesModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 class="modal-title" id="pokemonMovesModalTitle">Pokemon Moves</h2>
-                <button class="modal-close" id="pokemonMovesModalClose"><i class="fas fa-times"></i></button>
-            </div>
-            <div class="modal-body" id="pokemonMovesModalBody">
-                <!-- Modal content will be inserted here -->
-            </div>
-        </div>
-    </div>
-    
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // DOM Elements
-            const searchInput = document.getElementById('searchInput');
-            const searchBtn = document.getElementById('searchBtn');
-            const typeFilter = document.getElementById('typeFilter');
-            const categoryFilter = document.getElementById('categoryFilter');
-            const generationFilter = document.getElementById('generationFilter');
-            const powerFilter = document.getElementById('powerFilter');
-            const resultsContainer = document.getElementById('resultsContainer');
-            const paginationContainer = document.getElementById('pagination');
-            const gridViewBtn = document.getElementById('gridViewBtn');
-            const tableViewBtn = document.getElementById('tableViewBtn');
-            const sortSelect = document.getElementById('sortSelect');
-            const autocompleteDropdown = document.getElementById('autocompleteDropdown');
-            const toast = document.getElementById('toast');
-            const toastMessage = document.querySelector('.toast-message');
-            const toastClose = document.querySelector('.toast-close');
-            const moveModal = document.getElementById('moveModal');
-            const modalClose = document.getElementById('modalClose');
-            const modalTitle = document.getElementById('modalTitle');
-            const modalBody = document.getElementById('modalBody');
-            
-            // Pokemon Moves Modal Elements
-            const pokemonMovesModal = document.getElementById('pokemonMovesModal');
-            const pokemonMovesModalClose = document.getElementById('pokemonMovesModalClose');
-            const pokemonMovesModalTitle = document.getElementById('pokemonMovesModalTitle');
-            const pokemonMovesModalBody = document.getElementById('pokemonMovesModalBody');
-            
-            // State
-            let allMoves = [];
-            let filteredMoves = [];
-            let currentPage = 1;
-            const movesPerPage = 6;
-            let currentView = 'grid';
-            let autocompleteIndex = -1;
-            let pokemonData = {};
-            let pokemonLearnedByMoveCache = {};
-            let isRandomPage = true;
-            
-            // Type abbreviations
-            const typeAbbreviations = {
-                normal: 'Nor', fire: 'Fir', water: 'Wat', electric: 'Ele', grass: 'Gra',
-                ice: 'Ice', fighting: 'Fig', poison: 'Poi', ground: 'Gro', flying: 'Fly',
-                psychic: 'Psy', bug: 'Bug', rock: 'Roc', ghost: 'Gho', dragon: 'Dra',
-                dark: 'Dar', steel: 'Ste', fairy: 'Fai'
-            };
-            
-            // Initialize
-            fetchAllMovesData();
-            
-            // Event Listeners
-            searchBtn.addEventListener('click', filterMoves);
-            searchInput.addEventListener('keyup', function(event) {
-                if (event.key === 'Enter') {
-                    filterMoves();
-                } else {
-                    handleAutocomplete(event);
-                }
-            });
-            searchInput.addEventListener('input', function() {
-                if (this.value.trim() === '') {
-                    currentPage = 1;
-                    filterMoves();
-                } else {
-                    handleAutocomplete(event);
-                }
-            });
-            searchInput.addEventListener('focus', function() {
-                if (searchInput.value.trim() !== '') {
-                    showAutocomplete(searchInput.value);
-                }
-            });
-            document.addEventListener('click', function(event) {
-                if (!event.target.closest('.autocomplete-container')) {
-                    hideAutocomplete();
-                }
-            });
-            typeFilter.addEventListener('change', filterMoves);
-            categoryFilter.addEventListener('change', filterMoves);
-            generationFilter.addEventListener('change', filterMoves);
-            powerFilter.addEventListener('change', filterMoves);
-            sortSelect.addEventListener('change', sortMoves);
-            
-            gridViewBtn.addEventListener('click', function() {
-                currentView = 'grid';
-                gridViewBtn.classList.add('active');
-                tableViewBtn.classList.remove('active');
-                displayMoves();
-            });
-            
-            tableViewBtn.addEventListener('click', function() {
-                currentView = 'table';
-                tableViewBtn.classList.add('active');
-                gridViewBtn.classList.remove('active');
-                displayMoves();
-            });
-            
-            toastClose.addEventListener('click', hideToast);
-            modalClose.addEventListener('click', closeModal);
-            pokemonMovesModalClose.addEventListener('click', closePokemonMovesModal);
-            
-            moveModal.addEventListener('click', function(event) {
-                if (event.target === moveModal) {
-                    closeModal();
-                }
-            });
-            
-            pokemonMovesModal.addEventListener('click', function(event) {
-                if (event.target === pokemonMovesModal) {
-                    closePokemonMovesModal();
-                }
-            });
-            
-            // Fetch all moves data from PokeAPI
-            async function fetchAllMovesData() {
-                try {
-                    showLoadingState();
-                    
-                    // First, get the count of all moves
-                    const countResponse = await fetch('https://pokeapi.co/api/v2/move');
-                    const countData = await countResponse.json();
-                    const totalMoves = countData.count;
-                    
-                    // Now fetch all moves with larger batch size for better performance
-                    const allMovesPromises = [];
-                    const batchSize = 100; // Increased batch size
-                    
-                    for (let i = 0; i < totalMoves; i += batchSize) {
-                        const limit = Math.min(batchSize, totalMoves - i);
-                        const response = await fetch(`https://pokeapi.co/api/v2/move?offset=${i}&limit=${limit}`);
-                        const data = await response.json();
-                        
-                        const movePromises = data.results.map(move => fetch(move.url).then(res => res.json()));
-                        allMovesPromises.push(...movePromises);
-                    }
-                    
-                    // Wait for all moves to be fetched
-                    const movesDetails = await Promise.all(allMovesPromises);
-                    
-                    // Process moves data
-                    allMoves = movesDetails.map(move => {
-                        // Get effect text
-                        let effectText = "Không có thông tin";
-                        if (move.effect_entries && move.effect_entries.length > 0) {
-                            const effectEntry = move.effect_entries.find(entry => entry.language.name === 'en');
-                            if (effectEntry) {
-                                effectText = effectEntry.effect.replace('$effect_chance%', move.effect_chance || '');
-                            }
-                        }
-                        
-                        // Get short effect text
-                        let shortEffectText = "Không có thông tin";
-                        if (move.effect_entries && move.effect_entries.length > 0) {
-                            const shortEffectEntry = move.effect_entries.find(entry => entry.language.name === 'en');
-                            if (shortEffectEntry && shortEffectEntry.short_effect) {
-                                shortEffectText = shortEffectEntry.short_effect.replace('$effect_chance%', move.effect_chance || '');
-                            }
-                        }
-                        
-                        // Get generation name
-                        let genName = move.generation.name.replace('generation-', 'generation-').toUpperCase();
-                        genName = genName.replace('GENERATION-I', 'Gen 1');
-                        genName = genName.replace('GENERATION-II', 'Gen 2');
-                        genName = genName.replace('GENERATION-III', 'Gen 3');
-                        genName = genName.replace('GENERATION-IV', 'Gen 4');
-                        genName = genName.replace('GENERATION-V', 'Gen 5');
-                        genName = genName.replace('GENERATION-VI', 'Gen 6');
-                        genName = genName.replace('GENERATION-VII', 'Gen 7');
-                        genName = genName.replace('GENERATION-VIII', 'Gen 8');
-                        genName = genName.replace('GENERATION-IX', 'Gen 9');
-                        
-                        // Process stat changes
-                        const statChanges = [];
-                        if (move.stat_changes && move.stat_changes.length > 0) {
-                            move.stat_changes.forEach(change => {
-                                statChanges.push({
-                                    stat: change.stat.name.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase()),
-                                    change: change.change
-                                });
-                            });
-                        }
-                        
-                        // Process meta flags
-                        const metaFlags = [];
-                        if (move.meta) {
-                            if (move.meta.contact) metaFlags.push({ name: 'contact', icon: 'fa-hand-rock', label: 'Tiếp xúc' });
-                            if (move.meta.sound) metaFlags.push({ name: 'sound', icon: 'fa-volume-up', label: 'Âm thanh' });
-                            if (move.meta.snatch) metaFlags.push({ name: 'snatch', icon: 'fa-hand-paper', label: 'Cướp đoạt' });
-                            if (move.meta.defrost) metaFlags.push({ name: 'defrost', icon: 'fa-sun', label: 'Đông cứng' });
-                            if (move.meta.heal) metaFlags.push({ name: 'heal', icon: 'fa-heart', label: 'Hồi phục' });
-                            if (move.meta.reflectable) metaFlags.push({ name: 'reflectable', icon: 'fa-shield-alt', label: 'Phản xạ' });
-                            if (move.meta.bite) metaFlags.push({ name: 'bite', icon: 'fa-tooth', label: 'Cắn' });
-                            if (move.meta.punch) metaFlags.push({ name: 'punch', icon: 'fa-fist-raised', label: 'Đấm' });
-                            if (move.meta.pulse) metaFlags.push({ name: 'pulse', icon: 'fa-wave-square', label: 'Xung' });
-                            if (move.meta.bullet) metaFlags.push({ name: 'bullet', icon: 'fa-dot-circle', label: 'Đạn' });
-                            if (move.meta.powder) metaFlags.push({ name: 'powder', icon: 'fa-cloud', label: 'Bột' });
-                            if (move.meta.dance) metaFlags.push({ name: 'dance', icon: 'fa-music', label: 'Nhảy' });
-                            if (move.meta.wind) metaFlags.push({ name: 'wind', icon: 'fa-wind', label: 'Gió' });
-                            if (move.meta.slicing) metaFlags.push({ name: 'slicing', icon: 'fa-cut', label: 'Cắt' });
-                        }
-                        
-                        return {
-                            id: move.id,
-                            name: move.name.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase()),
-                            type: move.type.name,
-                            category: move.damage_class.name,
-                            power: move.power || null,
-                            accuracy: move.accuracy || null,
-                            pp: move.pp,
-                            effect: effectText,
-                            shortEffect: shortEffectText,
-                            effectChance: move.effect_chance || null,
-                            generation: genName,
-                            generationRaw: move.generation.name,
-                            priority: move.priority,
-                            target: move.target.name.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase()),
-                            contestType: move.contest_type ? move.contest_type.name : null,
-                            statChanges: statChanges,
-                            meta: move.meta || null,
-                            learnedByPokemon: move.learned_by_pokemon || [],
-                            flags: metaFlags
-                        };
-                    });
-                    
-                    // Sort moves by ID
-                    allMoves.sort((a, b) => a.id - b.id);
-                    
-                    // Initialize display with random moves for page 1
-                    filteredMoves = shuffleArray([...allMoves]);
-                    displayMoves();
-                    
-                    // Show success toast
-                    showToast('Đã tải dữ liệu thành công!', 'success');
-                    
-                } catch (error) {
-                    console.error('Error fetching moves data:', error);
-                    resultsContainer.innerHTML = `
-                        <div class="no-results">
-                            <i class="fas fa-exclamation-triangle"></i>
-                            <p>Không thể tải dữ liệu. Vui lòng thử lại sau.</p>
-                        </div>
-                    `;
-                    showToast('Không thể tải dữ liệu. Vui lòng thử lại sau.', 'error');
-                }
-            }
-            
-            // Enhanced loading state
-            function showLoadingState() {
-                resultsContainer.innerHTML = `
-                    <div class="loading">
-                        <i class="fas fa-spinner fa-spin"></i>
-                        <p>Đang tải dữ liệu...</p>
-                    </div>
-                `;
-            }
-            
-            // Fetch Pokémon data for move learners
-            async function fetchPokemonData(pokemonUrl) {
-                if (pokemonData[pokemonUrl]) {
-                    return pokemonData[pokemonUrl];
-                }
-                
-                try {
-                    const response = await fetch(pokemonUrl);
-                    const data = await response.json();
-                    
-                    // Get Smogon pixel art image URL
-                    const pokemonName = data.name;
-                    const pokemonId = data.id;
-                    
-                    // Try Smogon URL first
-                    let imageUrl = `https://www.smogon.com/dex/media/sprites/xy/${pokemonName}.gif`;
-                    
-                    // Fallback to other sources if Smogon image doesn't exist
-                    if (!imageUrl) {
-                        if (data.sprites.other && data.sprites.other['official-artwork'] && data.sprites.other['official-artwork'].front_default) {
-                            imageUrl = data.sprites.other['official-artwork'].front_default;
-                        } else if (data.sprites.other && data.sprites.other.home && data.sprites.other.home.front_default) {
-                            imageUrl = data.sprites.other.home.front_default;
-                        } else if (data.sprites.front_default) {
-                            imageUrl = data.sprites.front_default;
-                        }
-                    }
-                    
-                    const pokemon = {
-                        id: data.id,
-                        name: data.name.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase()),
-                        types: data.types.map(t => t.type.name),
-                        sprites: {
-                            front_default: imageUrl || `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${data.id}.png`
-                        }
-                    };
-                    
-                    pokemonData[pokemonUrl] = pokemon;
-                    return pokemon;
-                } catch (error) {
-                    console.error('Error fetching Pokémon data:', error);
-                    return null;
-                }
-            }
-            
-            // Fetch all Pokémon that can learn a specific move
-            async function fetchPokemonLearnedByMove(moveName) {
-                // Check cache first
-                if (pokemonLearnedByMoveCache[moveName]) {
-                    return pokemonLearnedByMoveCache[moveName];
-                }
-                
-                try {
-                    // Fallback to PokeAPI data
-                    const move = allMoves.find(m => m.name.toLowerCase() === moveName.toLowerCase());
-                    if (move) {
-                        const pokemonPromises = move.learnedByPokemon.map(p => fetchPokemonData(p.url));
-                        const pokemonList = await Promise.all(pokemonPromises);
-                        // Filter out Pokemon without images
-                        const filteredPokemonList = pokemonList.filter(p => p !== null && p.sprites.front_default);
-                        pokemonLearnedByMoveCache[moveName] = filteredPokemonList;
-                        return filteredPokemonList;
-                    }
-                    return [];
-                } catch (error) {
-                    console.error('Error fetching Pokémon that learn move:', error);
-                    return [];
-                }
-            }
-            
-            // Fetch Pokémon by name
-            async function fetchPokemonByName(name) {
-                try {
-                    const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${name.toLowerCase()}`);
-                    if (response.ok) {
-                        const data = await response.json();
-                        return {
-                            id: data.id,
-                            name: data.name.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase()),
-                            types: data.types.map(t => t.type.name),
-                            sprites: {
-                                front_default: data.sprites.front_default
-                            }
-                        };
-                    }
-                    return null;
-                } catch (error) {
-                    console.error('Error fetching Pokémon by name:', error);
-                    return null;
-                }
-            }
-            
-            // Fetch Pokémon moves data
-            async function fetchPokemonMoves(pokemonId) {
-                try {
-                    const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonId}`);
-                    const data = await response.json();
-                    
-                    // Process moves data
-                    const moves = [];
-                    
-                    // Get all moves with their details
-                    for (const moveData of data.moves) {
-                        const moveUrl = moveData.move.url;
-                        const moveResponse = await fetch(moveUrl);
-                        const moveDetails = await moveResponse.json();
-                        
-                        // Get effect text
-                        let effectText = "Không có thông tin";
-                        if (moveDetails.effect_entries && moveDetails.effect_entries.length > 0) {
-                            const effectEntry = moveDetails.effect_entries.find(entry => entry.language.name === 'en');
-                            if (effectEntry) {
-                                effectText = effectEntry.effect.replace('$effect_chance%', moveDetails.effect_chance || '');
-                            }
-                        }
-                        
-                        // Get short effect text
-                        let shortEffectText = "Không có thông tin";
-                        if (moveDetails.effect_entries && moveDetails.effect_entries.length > 0) {
-                            const shortEffectEntry = moveDetails.effect_entries.find(entry => entry.language.name === 'en');
-                            if (shortEffectEntry && shortEffectEntry.short_effect) {
-                                shortEffectText = shortEffectEntry.short_effect.replace('$effect_chance%', moveDetails.effect_chance || '');
-                            }
-                        }
-                        
-                        moves.push({
-                            id: moveDetails.id,
-                            name: moveDetails.name.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase()),
-                            type: moveDetails.type.name,
-                            category: moveDetails.damage_class.name,
-                            power: moveDetails.power || null,
-                            accuracy: moveDetails.accuracy || null,
-                            pp: moveDetails.pp,
-                            effect: effectText,
-                            shortEffect: shortEffectText,
-                            effectChance: moveDetails.effect_chance || null,
-                            priority: moveDetails.priority,
-                            generation: moveDetails.generation.name.replace('generation-', 'Gen ').toUpperCase()
-                        });
-                    }
-                    
-                    // Sort moves by ID
-                    moves.sort((a, b) => a.id - b.id);
-                    
-                    return moves;
-                } catch (error) {
-                    console.error('Error fetching Pokémon moves:', error);
-                    return [];
-                }
-            }
-            
-            // Utility function to shuffle array
-            function shuffleArray(array) {
-                const newArray = [...array];
-                for (let i = newArray.length - 1; i > 0; i--) {
-                    const j = Math.floor(Math.random() * (i + 1));
-                    [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
-                }
-                return newArray;
-            }
-            
-            // Autocomplete functionality
-            function handleAutocomplete(event) {
-                const query = searchInput.value.trim().toLowerCase();
-                
-                if (query.length < 2) {
-                    hideAutocomplete();
-                    return;
-                }
-                
-                showAutocomplete(query);
-                
-                // Handle keyboard navigation
-                const items = autocompleteDropdown.querySelectorAll('.autocomplete-item');
-                
-                if (event.key === 'ArrowDown') {
-                    event.preventDefault();
-                    autocompleteIndex = (autocompleteIndex + 1) % items.length;
-                    updateAutocompleteSelection(items);
-                } else if (event.key === 'ArrowUp') {
-                    event.preventDefault();
-                    autocompleteIndex = autocompleteIndex <= 0 ? items.length - 1 : autocompleteIndex - 1;
-                    updateAutocompleteSelection(items);
-                } else if (event.key === 'Enter') {
-                    event.preventDefault();
-                    if (autocompleteIndex >= 0 && autocompleteIndex < items.length) {
-                        selectAutocompleteItem(items[autocompleteIndex]);
-                    } else {
-                        filterMoves();
-                    }
-                } else if (event.key === 'Escape') {
-                    hideAutocomplete();
-                }
-            }
-            
-            function showAutocomplete(query) {
-                const matches = allMoves.filter(move => 
-                    move.name.toLowerCase().includes(query)
-                ).slice(0, 8);
-                
-                if (matches.length === 0) {
-                    hideAutocomplete();
-                    return;
-                }
-                
-                let html = '';
-                matches.forEach((move, index) => {
-                    const nameMatch = move.name.toLowerCase().indexOf(query.toLowerCase());
-                    const beforeMatch = move.name.substring(0, nameMatch);
-                    const matchText = move.name.substring(nameMatch, nameMatch + query.length);
-                    const afterMatch = move.name.substring(nameMatch + query.length);
-                    
-                    html += `
-                        <div class="autocomplete-item" data-index="${index}" data-id="${move.id}">
-                            <div class="autocomplete-item-icon ${move.type}">${move.type.charAt(0).toUpperCase()}</div>
-                            <div class="autocomplete-item-name">${beforeMatch}<span class="autocomplete-highlight">${matchText}</span>${afterMatch}</div>
-                            <div class="autocomplete-item-type ${move.type}">${move.type}</div>
-                        </div>
-                    `;
-                });
-                
-                autocompleteDropdown.innerHTML = html;
-                autocompleteDropdown.style.display = 'block';
-                autocompleteIndex = -1;
-                
-                // Add click event listeners to autocomplete items
-                autocompleteDropdown.querySelectorAll('.autocomplete-item').forEach(item => {
-                    item.addEventListener('click', function() {
-                        selectAutocompleteItem(this);
-                    });
-                });
-            }
-            
-            function hideAutocomplete() {
-                autocompleteDropdown.style.display = 'none';
-                autocompleteIndex = -1;
-            }
-            
-            function updateAutocompleteSelection(items) {
-                items.forEach((item, index) => {
-                    if (index === autocompleteIndex) {
-                        item.classList.add('active');
-                    } else {
-                        item.classList.remove('active');
-                    }
-                });
-            }
-            
-            function selectAutocompleteItem(item) {
-                const moveId = parseInt(item.getAttribute('data-id'));
-                const move = allMoves.find(m => m.id === moveId);
-                
-                if (move) {
-                    searchInput.value = move.name;
-                    hideAutocomplete();
-                    filterMoves();
-                    
-                    // Show move details modal
-                    showMoveDetails(move);
-                }
-            }
-            
-            // Filter moves based on search criteria
-            function filterMoves() {
-                const searchTerm = searchInput.value.toLowerCase().trim();
-                const typeValue = typeFilter.value;
-                const categoryValue = categoryFilter.value;
-                const generationValue = generationFilter.value;
-                const powerValue = powerFilter.value;
-                
-                // Reset to page 1 when filtering
-                currentPage = 1;
-                
-                // If search term is empty and no filters are applied, show random moves for page 1
-                if (!searchTerm && !typeValue && !categoryValue && !generationValue && !powerValue) {
-                    isRandomPage = true;
-                    filteredMoves = shuffleArray([...allMoves]);
-                } else {
-                    isRandomPage = false;
-                    filteredMoves = allMoves.filter(move => {
-                        // Search filter
-                        const matchesSearch = move.name.toLowerCase().includes(searchTerm);
-                        
-                        // Type filter
-                        const matchesType = !typeValue || move.type === typeValue;
-                        
-                        // Category filter
-                        const matchesCategory = !categoryValue || move.category === categoryValue;
-                        
-                        // Generation filter
-                        const matchesGeneration = !generationValue || move.generationRaw === generationValue;
-                        
-                        // Power filter
-                        let matchesPower = true;
-                        if (powerValue) {
-                            if (powerValue === 'status') {
-                                matchesPower = move.power === null;
-                            } else if (powerValue === 'low') {
-                                matchesPower = move.power !== null && move.power <= 40;
-                            } else if (powerValue === 'medium') {
-                                matchesPower = move.power !== null && move.power > 40 && move.power <= 80;
-                            } else if (powerValue === 'high') {
-                                matchesPower = move.power !== null && move.power > 80 && move.power <= 120;
-                            } else if (powerValue === 'very-high') {
-                                matchesPower = move.power !== null && move.power > 120;
-                            }
-                        }
-                        
-                        return matchesSearch && matchesType && matchesCategory && matchesGeneration && matchesPower;
-                    });
-                    
-                    // Sort by ID for filtered results
-                    filteredMoves.sort((a, b) => a.id - b.id);
-                }
-                
-                displayMoves();
-                
-                if (searchTerm) {
-                    showToast(`Tìm thấy ${filteredMoves.length} moves`, 'info');
-                }
-            }
-            
-            // Sort moves
-            function sortMoves() {
-                const sortValue = sortSelect.value;
-                
-                filteredMoves.sort((a, b) => {
-                    if (sortValue === 'id') {
-                        return a.id - b.id;
-                    } else if (sortValue === 'name') {
-                        return a.name.localeCompare(b.name);
-                    } else if (sortValue === 'type') {
-                        return a.type.localeCompare(b.type);
-                    } else if (sortValue === 'power') {
-                        if (a.power === null) return 1;
-                        if (b.power === null) return -1;
-                        return a.power - b.power;
-                    } else if (sortValue === 'pp') {
-                        return a.pp - b.pp;
-                    } else if (sortValue === 'generation') {
-                        return a.generationRaw.localeCompare(b.generationRaw);
-                    }
-                    return 0;
-                });
-                
-                displayMoves();
-            }
-            
-            // Display moves based on current view and page
-            function displayMoves() {
-                const startIndex = (currentPage - 1) * movesPerPage;
-                const endIndex = startIndex + movesPerPage;
-                const movesToShow = filteredMoves.slice(startIndex, endIndex);
-                
-                if (movesToShow.length === 0) {
-                    resultsContainer.innerHTML = `
-                        <div class="no-results">
-                            <i class="fas fa-search"></i>
-                            <p>Không tìm thấy moves nào.</p>
-                        </div>
-                    `;
-                    paginationContainer.innerHTML = '';
-                    return;
-                }
-                
-                if (currentView === 'grid') {
-                    displayMovesGrid(movesToShow);
-                } else {
-                    displayMovesTable(movesToShow);
-                }
-                
-                renderPagination();
-            }
-            
-            // Display moves in grid view
-            async function displayMovesGrid(moves) {
-                let html = '<div class="moves-grid">';
-                
-                for (const move of moves) {
-                    // Get random Pokémon that can learn this move
-                    const pokemonLearners = move.learnedByPokemon.length > 0 
-                        ? shuffleArray([...move.learnedByPokemon]).slice(0, 5)
-                        : [];
-                    
-                    const pokemonIcons = [];
-                    
-                    for (const pokemon of pokemonLearners) {
-                        const pokemonData = await fetchPokemonData(pokemon.url);
-                        if (pokemonData) {
-                            pokemonIcons.push(pokemonData);
-                        }
-                    }
-                    
-                    html += `
-                        <div class="move-card" data-id="${move.id}">
-                            <div class="move-header ${move.type}">
-                                <div class="move-name">${move.name}</div>
-                                <div class="move-type">${move.type}</div>
-                            </div>
-                            <div class="move-details">
-                                <div class="detail-grid">
-                                    <div class="detail-item">
-                                        <div class="detail-label">Phân loại</div>
-                                        <div class="detail-value category-${move.category}">${move.category.charAt(0).toUpperCase() + move.category.slice(1)}</div>
-                                    </div>
-                                    <div class="detail-item">
-                                        <div class="detail-label">Sức mạnh</div>
-                                        <div class="detail-value">${move.power || '-'}</div>
-                                    </div>
-                                    <div class="detail-item">
-                                        <div class="detail-label">Độ chính xác</div>
-                                        <div class="detail-value">${move.accuracy ? move.accuracy + '%' : '-'}</div>
-                                        ${move.accuracy ? `
-                                        <div class="accuracy-bar">
-                                            <div class="accuracy-fill" style="width: ${move.accuracy}%"></div>
-                                        </div>
-                                        ` : ''}
-                                    </div>
-                                    <div class="detail-item">
-                                        <div class="detail-label">PP</div>
-                                        <div class="detail-value">${move.pp}</div>
-                                    </div>
-                                    <div class="detail-item">
-                                        <div class="detail-label">Thế hệ</div>
-                                        <div class="detail-value">${move.generation}</div>
-                                    </div>
-                                    <div class="detail-item">
-                                        <div class="detail-label">Ưu tiên</div>
-                                        <div class="detail-value">${move.priority > 0 ? '+' : ''}${move.priority}</div>
-                                    </div>
-                                </div>
-                                ${move.effectChance ? `
-                                <div class="detail-item">
-                                    <div class="detail-label">Tỷ lệ hiệu ứng</div>
-                                    <div class="detail-value">${move.effectChance}%</div>
-                                </div>
-                                ` : ''}
-                                <div class="effect-box">
-                                    <div class="effect-title">Hiệu ứng:</div>
-                                    <div>${move.shortEffect}</div>
-                                </div>
-                                
-                                ${pokemonIcons.length > 0 ? `
-                                <div class="pokemon-learners">
-                                    <div class="pokemon-learners-title">
-                                        <i class="fas fa-paw"></i> Có thể học:
-                                    </div>
-                                    <div class="pokemon-icons">
-                                        ${pokemonIcons.map(pokemon => `
-                                            <div class="pokemon-icon" data-id="${pokemon.id}" data-name="${pokemon.name}">
-                                                <img src="${pokemon.sprites.front_default}" alt="${pokemon.name}" onerror="this.src='https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemon.id}.png'">
-                                                <div class="pokemon-tooltip">${pokemon.name}</div>
-                                            </div>
-                                        `).join('')}
-                                        ${move.learnedByPokemon.length > 5 ? '<div class="more-pokemon">+</div>' : ''}
-                                    </div>
-                                </div>
-                                ` : ''}
-                            </div>
-                        </div>
-                    `;
-                }
-                
-                html += '</div>';
-                resultsContainer.innerHTML = html;
-                
-                // Add event listeners to move cards
-                document.querySelectorAll('.move-card').forEach(card => {
-                    card.addEventListener('click', function(event) {
-                        if (!event.target.closest('.pokemon-icon') && !event.target.closest('.more-pokemon')) {
-                            const moveId = parseInt(this.getAttribute('data-id'));
-                            const move = allMoves.find(m => m.id === moveId);
-                            if (move) {
-                                showMoveDetails(move);
-                            }
-                        }
-                    });
-                });
-                
-                document.querySelectorAll('.pokemon-icon').forEach(icon => {
-                    icon.addEventListener('click', async function(event) {
-                        event.stopPropagation();
-                        const pokemonId = parseInt(this.getAttribute('data-id'));
-                        const pokemonName = this.getAttribute('data-name');
-                        await showPokemonMoves(pokemonId, pokemonName);
-                    });
-                });
-                
-                document.querySelectorAll('.more-pokemon').forEach(btn => {
-                    btn.addEventListener('click', function(event) {
-                        event.stopPropagation();
-                        const moveCard = this.closest('.move-card');
-                        const moveId = parseInt(moveCard.getAttribute('data-id'));
-                        const move = allMoves.find(m => m.id === moveId);
-                        if (move) {
-                            showMoveDetails(move);
-                        }
-                    });
-                });
-            }
-            
-            // Display moves in table view
-            function displayMovesTable(moves) {
-                let html = `
-                    <table class="moves-table">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Tên</th>
-                                <th>Loại</th>
-                                <th>Phân loại</th>
-                                <th>Sức mạnh</th>
-                                <th>Độ chính xác</th>
-                                <th>PP</th>
-                                <th>Thế hệ</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                `;
-                
-                moves.forEach(move => {
-                    html += `
-                        <tr data-id="${move.id}">
-                            <td>${move.id}</td>
-                            <td>${move.name}</td>
-                            <td><span class="move-type ${move.type}">${move.type}</span></td>
-                            <td><span class="category-${move.category}">${move.category.charAt(0).toUpperCase() + move.category.slice(1)}</span></td>
-                            <td>${move.power || '-'}</td>
-                            <td>${move.accuracy ? move.accuracy + '%' : '-'}</td>
-                            <td>${move.pp}</td>
-                            <td>${move.generation}</td>
-                        </tr>
-                    `;
-                });
-                
-                html += `
-                        </tbody>
-                    </table>
-                `;
-                
-                resultsContainer.innerHTML = html;
-                
-                // Add event listeners to table rows
-                document.querySelectorAll('.moves-table tr[data-id]').forEach(row => {
-                    row.addEventListener('click', function() {
-                        const moveId = parseInt(this.getAttribute('data-id'));
-                        const move = allMoves.find(m => m.id === moveId);
-                        if (move) {
-                            showMoveDetails(move);
-                        }
-                    });
-                });
-            }
-            
-            // Render pagination controls
-            function renderPagination() {
-                const totalPages = Math.ceil(filteredMoves.length / movesPerPage);
-                
-                if (totalPages <= 1) {
-                    paginationContainer.innerHTML = '';
-                    return;
-                }
-                
-                let html = '';
-                
-                // Previous button
-                html += `<button class="page-btn" ${currentPage === 1 ? 'disabled' : ''} onclick="changePage(${currentPage - 1})">
-                    <i class="fas fa-chevron-left"></i>
-                </button>`;
-                
-                // Page numbers
-                const maxVisiblePages = 5;
-                let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
-                let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
-                
-                if (endPage - startPage + 1 < maxVisiblePages) {
-                    startPage = Math.max(1, endPage - maxVisiblePages + 1);
-                }
-                
-                if (startPage > 1) {
-                    html += `<button class="page-btn" onclick="changePage(1)">1</button>`;
-                    if (startPage > 2) {
-                        html += `<span class="page-btn">...</span>`;
-                    }
-                }
-                
-                for (let i = startPage; i <= endPage; i++) {
-                    html += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="changePage(${i})">${i}</button>`;
-                }
-                
-                if (endPage < totalPages) {
-                    if (endPage < totalPages - 1) {
-                        html += `<span class="page-btn">...</span>`;
-                    }
-                    html += `<button class="page-btn" onclick="changePage(${totalPages})">${totalPages}</button>`;
-                }
-                
-                // Next button
-                html += `<button class="page-btn" ${currentPage === totalPages ? 'disabled' : ''} onclick="changePage(${currentPage + 1})">
-                    <i class="fas fa-chevron-right"></i>
-                </button>`;
-                
-                paginationContainer.innerHTML = html;
-            }
-            
-            // Change page function
-            window.changePage = function(page) {
-                currentPage = page;
-                
-                // If we're moving to page 2 from page 1, switch from random to sorted by ID
-                if (page === 2 && isRandomPage) {
-                    isRandomPage = false;
-                    filteredMoves = [...allMoves];
-                    filteredMoves.sort((a, b) => a.id - b.id);
-                }
-                
-                displayMoves();
-                window.scrollTo(0, 0);
-            };
-            
-            // Toast notification
-            function showToast(message, type = 'success') {
-                toast.className = `toast toast-${type}`;
-                toastMessage.textContent = message;
-                toast.classList.add('show');
-                
-                setTimeout(() => {
-                    hideToast();
-                }, 3000);
-            }
-            
-            function hideToast() {
-                toast.classList.remove('show');
-            }
-            
-            // Modal functions
-            async function showMoveDetails(move) {
-                modalTitle.textContent = move.name;
-                
-                // Show loading state
-                modalBody.innerHTML = `
-                    <div class="modal-detail-grid">
-                        <div class="modal-detail-item">
-                            <div class="modal-detail-label">ID</div>
-                            <div class="modal-detail-value">#${move.id}</div>
-                        </div>
-                        <div class="modal-detail-item">
-                            <div class="modal-detail-label">Loại</div>
-                            <div class="modal-detail-value"><span class="move-type ${move.type}">${move.type}</span></div>
-                        </div>
-                        <div class="modal-detail-item">
-                            <div class="modal-detail-label">Phân loại</div>
-                            <div class="modal-detail-value"><span class="category-${move.category}">${move.category.charAt(0).toUpperCase() + move.category.slice(1)}</span></div>
-                        </div>
-                        <div class="modal-detail-item">
-                            <div class="modal-detail-label">Sức mạnh</div>
-                            <div class="modal-detail-value">${move.power || '-'}</div>
-                        </div>
-                        <div class="modal-detail-item">
-                            <div class="modal-detail-label">Độ chính xác</div>
-                            <div class="modal-detail-value">${move.accuracy ? move.accuracy + '%' : '-'}</div>
-                            ${move.accuracy ? `
-                            <div class="modal-accuracy-container">
-                                <div class="modal-accuracy-bar">
-                                    <div class="modal-accuracy-fill" style="width: ${move.accuracy}%"></div>
-                                </div>
-                            </div>
-                            ` : ''}
-                        </div>
-                        <div class="modal-detail-item">
-                            <div class="modal-detail-label">PP</div>
-                            <div class="modal-detail-value">${move.pp}</div>
-                        </div>
-                        <div class="modal-detail-item">
-                            <div class="modal-detail-label">Thế hệ</div>
-                            <div class="modal-detail-value">${move.generation}</div>
-                        </div>
-                        <div class="modal-detail-item">
-                            <div class="modal-detail-label">Ưu tiên</div>
-                            <div class="modal-detail-value">${move.priority > 0 ? '+' : ''}${move.priority}</div>
-                        </div>
-                        <div class="modal-detail-item">
-                            <div class="modal-detail-label">Mục tiêu</div>
-                            <div class="modal-detail-value">${move.target}</div>
-                        </div>
-                        ${move.effectChance ? `
-                        <div class="modal-detail-item">
-                            <div class="modal-detail-label">Tỷ lệ hiệu ứng</div>
-                            <div class="modal-detail-value">${move.effectChance}%</div>
-                        </div>
-                        ` : ''}
-                    </div>
-                    
-                    <div class="modal-effect-box">
-                        <div class="modal-effect-title">Hiệu ứng:</div>
-                        <div>${move.effect}</div>
-                    </div>
-                    
-                    ${move.flags && move.flags.length > 0 ? `
-                    <div class="modal-effect-box">
-                        <div class="modal-effect-title">Đặc điểm:</div>
-                        <div class="move-flags">
-                            ${move.flags.map(flag => `
-                                <div class="move-flag">
-                                    <i class="fas ${flag.icon}"></i> ${flag.label}
-                                </div>
-                            `).join('')}
-                        </div>
-                    </div>
-                    ` : ''}
-                    
-                    ${move.statChanges && move.statChanges.length > 0 ? `
-                    <div class="modal-effect-box">
-                        <div class="modal-effect-title">Thay đổi chỉ số:</div>
-                        <div class="stat-changes">
-                            ${move.statChanges.map(change => `
-                                <div class="stat-change-item">
-                                    <span class="stat-change-icon ${change.change > 0 ? 'stat-change-up' : 'stat-change-down'}">
-                                        <i class="fas fa-arrow-${change.change > 0 ? 'up' : 'down'}"></i>
-                                    </span>
-                                    ${change.stat}: ${change.change > 0 ? '+' : ''}${change.change}
-                                </div>
-                            `).join('')}
-                        </div>
-                    </div>
-                    ` : ''}
-                    
-                    ${move.contestType ? `
-                    <div class="contest-info">
-                        <div class="contest-title">Cuộc thi:</div>
-                        <div>Loại: <span class="move-type ${move.contestType}">${move.contestType}</span></div>
-                    </div>
-                    ` : ''}
-                    
-                    <div class="pokemon-learners-modal">
-                        <div class="pokemon-learners-modal-title">
-                            <span><i class="fas fa-paw"></i> Pokémon có thể học</span>
-                            <span class="pokemon-learners-count">Đang tải...</span>
-                        </div>
-                        <div class="pokemon-grid-container">
-                            <div class="pokemon-loading">
-                                <i class="fas fa-spinner fa-spin"></i> Đang tải danh sách Pokémon...
-                            </div>
-                        </div>
-                    </div>
-                `;
-                
-                moveModal.classList.add('show');
-                
-                // Fetch and display Pokémon that can learn this move
-                try {
-                    const pokemonList = await fetchPokemonLearnedByMove(move.name);
-                    
-                    // Update the count
-                    const countElement = modalBody.querySelector('.pokemon-learners-count');
-                    if (countElement) {
-                        countElement.textContent = `(${pokemonList.length})`;
-                    }
-                    
-                    // Update the Pokémon grid
-                    const gridContainer = modalBody.querySelector('.pokemon-grid-container');
-                    if (gridContainer) {
-                        if (pokemonList.length === 0) {
-                            gridContainer.innerHTML = `
-                                <div class="no-results" style="padding: 20px;">
-                                    <i class="fas fa-exclamation-circle"></i>
-                                    <p>Không có Pokémon nào có thể học move này.</p>
-                                </div>
-                            `;
-                        } else {
-                            // Create filter controls
-                            const filterHtml = `
-                                <div class="pokemon-filter">
-                                    <input type="text" class="pokemon-search" placeholder="Tìm kiếm Pokémon..." id="pokemonSearch">
-                                    <div class="pokemon-filter-buttons">
-                                        <button class="pokemon-filter-btn active" id="sortById">
-                                            <i class="fas fa-sort-numeric-down"></i> ID
-                                        </button>
-                                        <button class="pokemon-filter-btn" id="sortByName">
-                                            <i class="fas fa-sort-alpha-down"></i> Tên
-                                        </button>
-                                    </div>
-                                </div>
-                                <div class="pokemon-grid" id="pokemonGrid">
-                                    ${pokemonList.map(pokemon => `
-                                        <div class="pokemon-card" data-id="${pokemon.id}" data-name="${pokemon.name.toLowerCase()}">
-                                            <div class="pokemon-card-image">
-                                                <img src="${pokemon.sprites.front_default}" alt="${pokemon.name}" onerror="this.src='https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemon.id}.png'">
-                                            </div>
-                                            <div class="pokemon-card-name">${pokemon.name}</div>
-                                            <div class="pokemon-types">
-                                                ${pokemon.types.map(type => `
-                                                    <div class="pokemon-type ${type}" title="${type}">
-                                                        <span class="pokemon-type-label">${typeAbbreviations[type] || type}</span>
-                                                    </div>
-                                                `).join('')}
-                                            </div>
-                                        </div>
-                                    `).join('')}
-                                </div>
-                            `;
-                            
-                            gridContainer.innerHTML = filterHtml;
-                            
-                            // Add event listeners to filter controls
-                            const pokemonSearch = document.getElementById('pokemonSearch');
-                            const sortById = document.getElementById('sortById');
-                            const sortByName = document.getElementById('sortByName');
-                            const pokemonGrid = document.getElementById('pokemonGrid');
-                            
-                            // Search functionality
-                            pokemonSearch.addEventListener('input', function() {
-                                const searchTerm = this.value.toLowerCase();
-                                const cards = pokemonGrid.querySelectorAll('.pokemon-card');
-                                
-                                cards.forEach(card => {
-                                    const name = card.getAttribute('data-name');
-                                    if (name.includes(searchTerm)) {
-                                        card.style.display = '';
-                                    } else {
-                                        card.style.display = 'none';
-                                    }
-                                });
-                            });
-                            
-                            // Sort functionality
-                            sortById.addEventListener('click', function() {
-                                sortById.classList.add('active');
-                                sortByName.classList.remove('active');
-                                
-                                const cards = Array.from(pokemonGrid.querySelectorAll('.pokemon-card'));
-                                cards.sort((a, b) => {
-                                    const idA = parseInt(a.getAttribute('data-id'));
-                                    const idB = parseInt(b.getAttribute('data-id'));
-                                    return idA - idB;
-                                });
-                                
-                                pokemonGrid.innerHTML = '';
-                                cards.forEach(card => pokemonGrid.appendChild(card));
-                            });
-                            
-                            sortByName.addEventListener('click', function() {
-                                sortByName.classList.add('active');
-                                sortById.classList.remove('active');
-                                
-                                const cards = Array.from(pokemonGrid.querySelectorAll('.pokemon-card'));
-                                cards.sort((a, b) => {
-                                    const nameA = a.getAttribute('data-name');
-                                    const nameB = b.getAttribute('data-name');
-                                    return nameA.localeCompare(nameB);
-                                });
-                                
-                                pokemonGrid.innerHTML = '';
-                                cards.forEach(card => pokemonGrid.appendChild(card));
-                            });
-                            
-                            // Add event listeners to Pokémon cards
-                            document.querySelectorAll('.pokemon-card').forEach(card => {
-                                card.addEventListener('click', async function() {
-                                    const pokemonId = parseInt(this.getAttribute('data-id'));
-                                    const pokemonName = this.querySelector('.pokemon-card-name').textContent;
-                                    await showPokemonMoves(pokemonId, pokemonName);
-                                });
-                            });
-                        }
-                    }
-                } catch (error) {
-                    console.error('Error fetching Pokémon that learn move:', error);
-                    
-                    // Update the count
-                    const countElement = modalBody.querySelector('.pokemon-learners-count');
-                    if (countElement) {
-                        countElement.textContent = '(0)';
-                    }
-                    
-                    // Update the Pokémon grid
-                    const gridContainer = modalBody.querySelector('.pokemon-grid-container');
-                    if (gridContainer) {
-                        gridContainer.innerHTML = `
-                            <div class="no-results" style="padding: 20px;">
-                                <i class="fas fa-exclamation-triangle"></i>
-                                <p>Không thể tải danh sách Pokémon. Vui lòng thử lại sau.</p>
-                            </div>
-                        `;
-                    }
-                }
-            }
-            
-            function closeModal() {
-                moveModal.classList.remove('show');
-            }
-            
-            // Show Pokemon Moves Modal
-            async function showPokemonMoves(pokemonId, pokemonName) {
-                pokemonMovesModalTitle.textContent = `${pokemonName} - Moves`;
-                
-                // Show loading state
-                pokemonMovesModalBody.innerHTML = `
-                    <div class="pokemon-loading">
-                        <i class="fas fa-spinner fa-spin"></i> Đang tải danh sách moves...
-                    </div>
-                `;
-                
-                pokemonMovesModal.classList.add('show');
-                
-                try {
-                    // Fetch Pokemon moves
-                    const moves = await fetchPokemonMoves(pokemonId);
-                    
-                    if (moves.length === 0) {
-                        pokemonMovesModalBody.innerHTML = `
-                            <div class="no-results" style="padding: 20px;">
-                                <i class="fas fa-exclamation-circle"></i>
-                                <p>Không có thông tin về moves của Pokémon này.</p>
-                            </div>
-                        `;
-                        return;
-                    }
-                    
-                    // Create moves table
-                    let html = `
-                        <div class="pokemon-filter">
-                            <input type="text" class="pokemon-search" placeholder="Tìm kiếm move..." id="pokemonMovesSearch">
-                            <div class="pokemon-filter-buttons">
-                                <button class="pokemon-filter-btn active" id="sortMovesById">
-                                    <i class="fas fa-sort-numeric-down"></i> ID
-                                </button>
-                                <button class="pokemon-filter-btn" id="sortMovesByName">
-                                    <i class="fas fa-sort-alpha-down"></i> Tên
-                                </button>
-                                <button class="pokemon-filter-btn" id="sortMovesByPower">
-                                    <i class="fas fa-sort-numeric-down"></i> Sức mạnh
-                                </button>
-                            </div>
-                        </div>
-                        <table class="pokemon-moves-table">
-                            <thead>
-                                <tr>
-                                    <th>Name</th>
-                                    <th class="type-cell">Type</th>
-                                    <th class="power-cell">Pow</th>
-                                    <th class="accuracy-cell">Acc</th>
-                                    <th class="pp-cell">PP</th>
-                                    <th class="priority-cell">mov+</th>
-                                </tr>
-                            </thead>
-                            <tbody id="pokemonMovesTableBody">
-                                ${moves.map(move => `
-                                    <tr data-id="${move.id}">
-                                        <td class="move-name-cell">${move.name}</td>
-                                        <td class="type-cell">
-                                            <span class="move-type ${move.type}">${move.type}</span>
-                                        </td>
-                                        <td class="power-cell">${move.power || '-'}</td>
-                                        <td class="accuracy-cell">${move.accuracy ? move.accuracy + '%' : '-'}</td>
-                                        <td class="pp-cell">${move.pp}</td>
-                                        <td class="priority-cell">${move.priority > 0 ? '+' : ''}${move.priority}</td>
-                                    </tr>
-                                `).join('')}
-                            </tbody>
-                        </table>
-                    `;
-                    
-                    pokemonMovesModalBody.innerHTML = html;
-                    
-                    // Add event listeners to filter controls
-                    const pokemonMovesSearch = document.getElementById('pokemonMovesSearch');
-                    const sortMovesById = document.getElementById('sortMovesById');
-                    const sortMovesByName = document.getElementById('sortMovesByName');
-                    const sortMovesByPower = document.getElementById('sortMovesByPower');
-                    const pokemonMovesTableBody = document.getElementById('pokemonMovesTableBody');
-                    
-                    // Search functionality
-                    pokemonMovesSearch.addEventListener('input', function() {
-                        const searchTerm = this.value.toLowerCase();
-                        const rows = pokemonMovesTableBody.querySelectorAll('tr');
-                        
-                        rows.forEach(row => {
-                            const name = row.querySelector('.move-name-cell').textContent.toLowerCase();
-                            if (name.includes(searchTerm)) {
-                                row.style.display = '';
-                            } else {
-                                row.style.display = 'none';
-                            }
-                        });
-                    });
-                    
-                    // Sort functionality
-                    sortMovesById.addEventListener('click', function() {
-                        sortMovesById.classList.add('active');
-                        sortMovesByName.classList.remove('active');
-                        sortMovesByPower.classList.remove('active');
-                        
-                        const rows = Array.from(pokemonMovesTableBody.querySelectorAll('tr'));
-                        rows.sort((a, b) => {
-                            const idA = parseInt(a.getAttribute('data-id'));
-                            const idB = parseInt(b.getAttribute('data-id'));
-                            return idA - idB;
-                        });
-                        
-                        pokemonMovesTableBody.innerHTML = '';
-                        rows.forEach(row => pokemonMovesTableBody.appendChild(row));
-                    });
-                    
-                    sortMovesByName.addEventListener('click', function() {
-                        sortMovesByName.classList.add('active');
-                        sortMovesById.classList.remove('active');
-                        sortMovesByPower.classList.remove('active');
-                        
-                        const rows = Array.from(pokemonMovesTableBody.querySelectorAll('tr'));
-                        rows.sort((a, b) => {
-                            const nameA = a.querySelector('.move-name-cell').textContent;
-                            const nameB = b.querySelector('.move-name-cell').textContent;
-                            return nameA.localeCompare(nameB);
-                        });
-                        
-                        pokemonMovesTableBody.innerHTML = '';
-                        rows.forEach(row => pokemonMovesTableBody.appendChild(row));
-                    });
-                    
-                    sortMovesByPower.addEventListener('click', function() {
-                        sortMovesByPower.classList.add('active');
-                        sortMovesById.classList.remove('active');
-                        sortMovesByName.classList.remove('active');
-                        
-                        const rows = Array.from(pokemonMovesTableBody.querySelectorAll('tr'));
-                        rows.sort((a, b) => {
-                            const powerA = a.querySelector('.power-cell').textContent;
-                            const powerB = b.querySelector('.power-cell').textContent;
-                            
-                            // Handle '-' values (status moves)
-                            if (powerA === '-' && powerB === '-') return 0;
-                            if (powerA === '-') return 1;
-                            if (powerB === '-') return -1;
-                            
-                            return parseInt(powerA) - parseInt(powerB);
-                        });
-                        
-                        pokemonMovesTableBody.innerHTML = '';
-                        rows.forEach(row => pokemonMovesTableBody.appendChild(row));
-                    });
-                    
-                    // Add event listeners to move rows
-                    document.querySelectorAll('#pokemonMovesTableBody tr').forEach(row => {
-                        row.addEventListener('click', function() {
-                            const moveId = parseInt(this.getAttribute('data-id'));
-                            const move = allMoves.find(m => m.id === moveId);
-                            if (move) {
-                                closeModal();
-                                closePokemonMovesModal();
-                                showMoveDetails(move);
-                            }
-                        });
-                    });
-                    
-                } catch (error) {
-                    console.error('Error fetching Pokémon moves:', error);
-                    pokemonMovesModalBody.innerHTML = `
-                        <div class="no-results" style="padding: 20px;">
-                            <i class="fas fa-exclamation-triangle"></i>
-                            <p>Không thể tải danh sách moves. Vui lòng thử lại sau.</p>
-                        </div>
-                    `;
-                }
-            }
-            
-            function closePokemonMovesModal() {
-                pokemonMovesModal.classList.remove('show');
-            }
-        });
-    </script>
+    </footer>
 </body>
 </html>
