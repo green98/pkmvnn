@@ -247,24 +247,32 @@
             let startX, startY, scrollLeft, scrollTop;
             let activeHotspot = null;
             
+            // Lưu kích thước gốc của bản đồ
+            let mapOriginalWidth = 0;
+            let mapOriginalHeight = 0;
+            
             // Đặt vị trí ban đầu của bản đồ
             function initializeMap() {
                 const containerWidth = window.innerWidth;
                 const containerHeight = window.innerHeight;
-                const mapWidth = pokemonMap.naturalWidth;
-                const mapHeight = pokemonMap.naturalHeight;
+                
+                // Lưu kích thước gốc của bản đồ
+                if (mapOriginalWidth === 0 || mapOriginalHeight === 0) {
+                    mapOriginalWidth = pokemonMap.naturalWidth;
+                    mapOriginalHeight = pokemonMap.naturalHeight;
+                }
                 
                 // Tính toán tỷ lệ để vừa màn hình
-                const scaleX = containerWidth / mapWidth;
-                const scaleY = containerHeight / mapHeight;
+                const scaleX = containerWidth / mapOriginalWidth;
+                const scaleY = containerHeight / mapOriginalHeight;
                 const fitScale = Math.min(scaleX, scaleY) * 0.9; // Giảm 10% để có khoảng đệm
                 
                 scale = Math.max(minScale, Math.min(maxScale, fitScale));
                 mapContainer.style.transform = `scale(${scale})`;
                 
                 // Căn giữa bản đồ
-                const scaledWidth = mapWidth * scale;
-                const scaledHeight = mapHeight * scale;
+                const scaledWidth = mapOriginalWidth * scale;
+                const scaledHeight = mapOriginalHeight * scale;
                 mapContainer.style.left = `${(containerWidth - scaledWidth) / 2}px`;
                 mapContainer.style.top = `${(containerHeight - scaledHeight) / 2}px`;
                 
@@ -277,42 +285,62 @@
                 hotspots.forEach(hotspot => {
                     const tooltip = hotspot.querySelector('.tooltip');
                     if (tooltip) {
-                        // Lưu kích thước gốc
+                        // Lưu kích thước gốc nếu chưa có
                         if (!tooltip.dataset.originalWidth) {
                             tooltip.dataset.originalWidth = tooltip.offsetWidth;
+                            tooltip.dataset.originalFontSize = window.getComputedStyle(tooltip).fontSize;
+                            tooltip.dataset.originalPadding = window.getComputedStyle(tooltip).padding;
+                            tooltip.dataset.originalBorderRadius = window.getComputedStyle(tooltip).borderRadius;
+                            tooltip.dataset.originalArrowSize = 8; // Kích thước mũi tên gốc
                         }
                         
                         const originalWidth = parseFloat(tooltip.dataset.originalWidth);
-                        const newWidth = originalWidth / scale;
+                        const originalFontSize = parseFloat(tooltip.dataset.originalFontSize);
+                        const originalPadding = parseFloat(tooltip.dataset.originalPadding);
+                        const originalBorderRadius = parseFloat(tooltip.dataset.originalBorderRadius);
+                        const originalArrowSize = parseFloat(tooltip.dataset.originalArrowSize);
+                        
+                        // Tính toán kích thước mới dựa trên tỷ lệ zoom
+                        const newWidth = originalWidth * scale;
+                        const newFontSize = originalFontSize * scale;
+                        const newPadding = originalPadding * scale;
+                        const newBorderRadius = originalBorderRadius * scale;
+                        const newArrowSize = originalArrowSize * scale;
                         
                         // Giới hạn kích thước tối thiểu và tối đa
                         const minTooltipWidth = 150;
                         const maxTooltipWidth = 300;
                         const clampedWidth = Math.max(minTooltipWidth, Math.min(maxTooltipWidth, newWidth));
                         
+                        const minFontSize = 12;
+                        const maxFontSize = 16;
+                        const clampedFontSize = Math.max(minFontSize, Math.min(maxFontSize, newFontSize));
+                        
+                        const minPadding = 5;
+                        const maxPadding = 15;
+                        const clampedPadding = Math.max(minPadding, Math.min(maxPadding, newPadding));
+                        
+                        const minBorderRadius = 4;
+                        const maxBorderRadius = 12;
+                        const clampedBorderRadius = Math.max(minBorderRadius, Math.min(maxBorderRadius, newBorderRadius));
+                        
+                        const minArrowSize = 5;
+                        const maxArrowSize = 10;
+                        const clampedArrowSize = Math.max(minArrowSize, Math.min(maxArrowSize, newArrowSize));
+                        
+                        // Áp dụng kích thước mới
                         tooltip.style.width = `${clampedWidth}px`;
+                        tooltip.style.fontSize = `${clampedFontSize}px`;
+                        tooltip.style.padding = `${clampedPadding}px`;
+                        tooltip.style.borderRadius = `${clampedBorderRadius}px`;
                         
-                        // Điều chỉnh kích thước font chữ
-                        const baseFontSize = 14;
-                        const newFontSize = Math.max(12, Math.min(16, baseFontSize / scale));
-                        tooltip.style.fontSize = `${newFontSize}px`;
+                        // Cập nhật kích thước mũi tên
+                        updateTooltipArrowSize(tooltip, clampedArrowSize);
                         
-                        // Điều chỉnh padding
-                        const basePadding = 10;
-                        const newPadding = Math.max(5, Math.min(15, basePadding / scale));
-                        tooltip.style.padding = `${newPadding}px`;
-                        
-                        // Điều chỉnh border radius
-                        const baseBorderRadius = 8;
-                        const newBorderRadius = Math.max(4, Math.min(12, baseBorderRadius / scale));
-                        tooltip.style.borderRadius = `${newBorderRadius}px`;
-                        
-                        // Điều chỉnh kích thước mũi tên tooltip
-                        const arrowSize = Math.max(5, Math.min(10, 8 / scale));
-                        tooltip.style.setProperty('--arrow-size', `${arrowSize}px`);
-                        
-                        // Cập nhật lại CSS cho mũi tên
-                        updateTooltipArrowSize(tooltip, arrowSize);
+                        // Nếu tooltip đang hiển thị, cập nhật lại vị trí
+                        if (hotspot.classList.contains('active')) {
+                            adjustTooltipPosition(tooltip, hotspot);
+                        }
                     }
                 });
             }
@@ -475,14 +503,6 @@
                     scale += 0.1;
                     mapContainer.style.transform = `scale(${scale})`;
                     updateTooltipsScale();
-                    
-                    // Nếu có tooltip đang hiển thị, cập nhật lại vị trí
-                    if (activeHotspot) {
-                        const tooltip = activeHotspot.querySelector('.tooltip');
-                        if (tooltip) {
-                            adjustTooltipPosition(tooltip, activeHotspot);
-                        }
-                    }
                 }
             });
             
@@ -491,14 +511,6 @@
                     scale -= 0.1;
                     mapContainer.style.transform = `scale(${scale})`;
                     updateTooltipsScale();
-                    
-                    // Nếu có tooltip đang hiển thị, cập nhật lại vị trí
-                    if (activeHotspot) {
-                        const tooltip = activeHotspot.querySelector('.tooltip');
-                        if (tooltip) {
-                            adjustTooltipPosition(tooltip, activeHotspot);
-                        }
-                    }
                 }
             });
             
@@ -509,14 +521,6 @@
             // Xử lý xoay màn hình
             window.addEventListener('resize', function() {
                 initializeMap();
-                
-                // Nếu có tooltip đang hiển thị, cập nhật lại vị trí
-                if (activeHotspot) {
-                    const tooltip = activeHotspot.querySelector('.tooltip');
-                    if (tooltip) {
-                        adjustTooltipPosition(tooltip, activeHotspot);
-                    }
-                }
             });
             
             // Xử lý sự kiện cuộn bằng chuột
@@ -530,14 +534,6 @@
                     scale = newScale;
                     mapContainer.style.transform = `scale(${scale})`;
                     updateTooltipsScale();
-                    
-                    // Nếu có tooltip đang hiển thị, cập nhật lại vị trí
-                    if (activeHotspot) {
-                        const tooltip = activeHotspot.querySelector('.tooltip');
-                        if (tooltip) {
-                            adjustTooltipPosition(tooltip, activeHotspot);
-                        }
-                    }
                 }
             });
             
