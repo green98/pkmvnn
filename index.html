@@ -52,9 +52,6 @@
         
         .tooltip {
             position: absolute;
-            bottom: 125%;
-            left: 50%;
-            transform: translateX(-50%);
             background-color: white;
             border: 2px solid #3a7ca5;
             border-radius: 8px;
@@ -65,7 +62,7 @@
             transition: opacity 0.3s, visibility 0.3s;
             z-index: 20;
             width: 250px;
-            transform-origin: bottom center;
+            transform-origin: center;
         }
         
         .tooltip img {
@@ -83,12 +80,61 @@
         .tooltip::after {
             content: "";
             position: absolute;
-            top: 100%;
-            left: 50%;
-            margin-left: -8px;
             border-width: 8px;
             border-style: solid;
             border-color: #3a7ca5 transparent transparent transparent;
+        }
+        
+        /* Các lớp định hướng cho tooltip */
+        .tooltip-top {
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .tooltip-top::after {
+            top: 100%;
+            left: 50%;
+            margin-left: -8px;
+        }
+        
+        .tooltip-bottom {
+            top: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .tooltip-bottom::after {
+            bottom: 100%;
+            left: 50%;
+            margin-left: -8px;
+            border-color: transparent transparent #3a7ca5 transparent;
+        }
+        
+        .tooltip-left {
+            right: 125%;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        
+        .tooltip-left::after {
+            left: 100%;
+            top: 50%;
+            margin-top: -8px;
+            border-color: transparent transparent transparent #3a7ca5;
+        }
+        
+        .tooltip-right {
+            left: 125%;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        
+        .tooltip-right::after {
+            right: 100%;
+            top: 50%;
+            margin-top: -8px;
+            border-color: transparent #3a7ca5 transparent transparent;
         }
         
         .hotspot:hover .tooltip,
@@ -161,7 +207,7 @@
             
             <!-- Pallet Town: 524,247 đến 542,264 -->
             <div class="hotspot pallet-town" data-location="Pallet Town">
-                <div class="tooltip">
+                <div class="tooltip tooltip-top">
                     <div class="tooltip-title">Pallet Town</div>
                     <img src="https://wiki.pokemonrevolution.net/images/thumb/6/6b/Pallet_Town.png/600px-Pallet_Town.png" alt="Pallet Town">
                 </div>
@@ -169,7 +215,7 @@
             
             <!-- Viridian City: 510,181 đến 542,212 -->
             <div class="hotspot viridian-city" data-location="Viridian City">
-                <div class="tooltip">
+                <div class="tooltip tooltip-top">
                     <div class="tooltip-title">Viridian City</div>
                     <img src="https://wiki.pokemonrevolution.net/images/thumb/9/9f/Viridian_City.png/600px-Viridian_City.png" alt="Viridian City">
                 </div>
@@ -266,19 +312,99 @@
                         tooltip.style.setProperty('--arrow-size', `${arrowSize}px`);
                         
                         // Cập nhật lại CSS cho mũi tên
-                        const styleSheet = document.styleSheets[0];
-                        const arrowRules = Array.from(styleSheet.cssRules).filter(rule => 
-                            rule.selectorText && rule.selectorText.includes('.tooltip::after')
-                        );
-                        
-                        if (arrowRules.length > 0) {
-                            arrowRules[0].style.borderTopWidth = `${arrowSize}px`;
-                            arrowRules[0].style.borderLeftWidth = `${arrowSize}px`;
-                            arrowRules[0].style.borderRightWidth = `${arrowSize}px`;
-                            arrowRules[0].style.marginLeft = `-${arrowSize}px`;
+                        updateTooltipArrowSize(tooltip, arrowSize);
+                    }
+                });
+            }
+            
+            // Cập nhật kích thước mũi tên tooltip
+            function updateTooltipArrowSize(tooltip, arrowSize) {
+                const styleSheet = document.styleSheets[0];
+                const tooltipClasses = ['tooltip-top::after', 'tooltip-bottom::after', 'tooltip-left::after', 'tooltip-right::after'];
+                
+                tooltipClasses.forEach(selector => {
+                    const rules = Array.from(styleSheet.cssRules).filter(rule => 
+                        rule.selectorText && rule.selectorText.includes(selector)
+                    );
+                    
+                    if (rules.length > 0) {
+                        if (selector.includes('top') || selector.includes('bottom')) {
+                            rules[0].style.borderTopWidth = `${arrowSize}px`;
+                            rules[0].style.borderLeftWidth = `${arrowSize}px`;
+                            rules[0].style.borderRightWidth = `${arrowSize}px`;
+                            rules[0].style.marginLeft = `-${arrowSize}px`;
+                        } else {
+                            rules[0].style.borderTopWidth = `${arrowSize}px`;
+                            rules[0].style.borderBottomWidth = `${arrowSize}px`;
+                            rules[0].style.borderLeftWidth = `${arrowSize}px`;
+                            rules[0].style.marginTop = `-${arrowSize}px`;
                         }
                     }
                 });
+            }
+            
+            // Điều chỉnh vị trí tooltip để không bị tràn ra ngoài màn hình
+            function adjustTooltipPosition(tooltip, hotspot) {
+                // Xóa tất cả các lớp định hướng
+                tooltip.classList.remove('tooltip-top', 'tooltip-bottom', 'tooltip-left', 'tooltip-right');
+                
+                // Lấy thông tin vị trí và kích thước
+                const hotspotRect = hotspot.getBoundingClientRect();
+                const tooltipRect = tooltip.getBoundingClientRect();
+                const viewportWidth = window.innerWidth;
+                const viewportHeight = window.innerHeight;
+                
+                // Tính toán khoảng cách đến các cạnh
+                const spaceTop = hotspotRect.top;
+                const spaceBottom = viewportHeight - hotspotRect.bottom;
+                const spaceLeft = hotspotRect.left;
+                const spaceRight = viewportWidth - hotspotRect.right;
+                
+                // Xác định hướng hiển thị tốt nhất
+                let bestPosition = 'top';
+                let maxSpace = spaceTop;
+                
+                if (spaceBottom > maxSpace) {
+                    maxSpace = spaceBottom;
+                    bestPosition = 'bottom';
+                }
+                
+                if (spaceLeft > maxSpace) {
+                    maxSpace = spaceLeft;
+                    bestPosition = 'left';
+                }
+                
+                if (spaceRight > maxSpace) {
+                    maxSpace = spaceRight;
+                    bestPosition = 'right';
+                }
+                
+                // Thêm lớp định hướng tương ứng
+                tooltip.classList.add(`tooltip-${bestPosition}`);
+                
+                // Điều chỉnh vị trí nếu cần thiết
+                setTimeout(() => {
+                    const newTooltipRect = tooltip.getBoundingClientRect();
+                    
+                    // Nếu tooltip vẫn bị tràn ra ngoài, điều chỉnh thêm
+                    if (bestPosition === 'top' || bestPosition === 'bottom') {
+                        if (newTooltipRect.left < 0) {
+                            tooltip.style.left = `${hotspotRect.left + hotspotRect.width / 2}px`;
+                            tooltip.style.transform = 'translateX(-50%)';
+                        } else if (newTooltipRect.right > viewportWidth) {
+                            tooltip.style.left = `${hotspotRect.left + hotspotRect.width / 2 - (newTooltipRect.right - viewportWidth)}px`;
+                            tooltip.style.transform = 'translateX(-50%)';
+                        }
+                    } else if (bestPosition === 'left' || bestPosition === 'right') {
+                        if (newTooltipRect.top < 0) {
+                            tooltip.style.top = `${hotspotRect.top + hotspotRect.height / 2}px`;
+                            tooltip.style.transform = 'translateY(-50%)';
+                        } else if (newTooltipRect.bottom > viewportHeight) {
+                            tooltip.style.top = `${hotspotRect.top + hotspotRect.height / 2 - (newTooltipRect.bottom - viewportHeight)}px`;
+                            tooltip.style.transform = 'translateY(-50%)';
+                        }
+                    }
+                }, 10);
             }
             
             // Khởi tạo bản đồ khi tải trang
@@ -349,6 +475,14 @@
                     scale += 0.1;
                     mapContainer.style.transform = `scale(${scale})`;
                     updateTooltipsScale();
+                    
+                    // Nếu có tooltip đang hiển thị, cập nhật lại vị trí
+                    if (activeHotspot) {
+                        const tooltip = activeHotspot.querySelector('.tooltip');
+                        if (tooltip) {
+                            adjustTooltipPosition(tooltip, activeHotspot);
+                        }
+                    }
                 }
             });
             
@@ -357,6 +491,14 @@
                     scale -= 0.1;
                     mapContainer.style.transform = `scale(${scale})`;
                     updateTooltipsScale();
+                    
+                    // Nếu có tooltip đang hiển thị, cập nhật lại vị trí
+                    if (activeHotspot) {
+                        const tooltip = activeHotspot.querySelector('.tooltip');
+                        if (tooltip) {
+                            adjustTooltipPosition(tooltip, activeHotspot);
+                        }
+                    }
                 }
             });
             
@@ -365,7 +507,17 @@
             });
             
             // Xử lý xoay màn hình
-            window.addEventListener('resize', initializeMap);
+            window.addEventListener('resize', function() {
+                initializeMap();
+                
+                // Nếu có tooltip đang hiển thị, cập nhật lại vị trí
+                if (activeHotspot) {
+                    const tooltip = activeHotspot.querySelector('.tooltip');
+                    if (tooltip) {
+                        adjustTooltipPosition(tooltip, activeHotspot);
+                    }
+                }
+            });
             
             // Xử lý sự kiện cuộn bằng chuột
             scrollContainer.addEventListener('wheel', function(e) {
@@ -378,6 +530,14 @@
                     scale = newScale;
                     mapContainer.style.transform = `scale(${scale})`;
                     updateTooltipsScale();
+                    
+                    // Nếu có tooltip đang hiển thị, cập nhật lại vị trí
+                    if (activeHotspot) {
+                        const tooltip = activeHotspot.querySelector('.tooltip');
+                        if (tooltip) {
+                            adjustTooltipPosition(tooltip, activeHotspot);
+                        }
+                    }
                 }
             });
             
@@ -386,6 +546,8 @@
                 // Xử lý click cho di động
                 hotspot.addEventListener('click', function(e) {
                     e.stopPropagation();
+                    
+                    const tooltip = hotspot.querySelector('.tooltip');
                     
                     // Nếu đã có hotspot đang active, đóng nó
                     if (activeHotspot && activeHotspot !== hotspot) {
@@ -397,13 +559,23 @@
                     
                     // Cập nhật hotspot đang active
                     activeHotspot = hotspot.classList.contains('active') ? hotspot : null;
+                    
+                    // Điều chỉnh vị trí tooltip nếu hiển thị
+                    if (hotspot.classList.contains('active') && tooltip) {
+                        adjustTooltipPosition(tooltip, hotspot);
+                    }
                 });
                 
                 // Xử lý hover cho desktop
                 hotspot.addEventListener('mouseenter', function() {
                     if (window.innerWidth > 768) { // Chỉ áp dụng cho desktop
+                        const tooltip = hotspot.querySelector('.tooltip');
                         hotspot.classList.add('active');
                         activeHotspot = hotspot;
+                        
+                        if (tooltip) {
+                            adjustTooltipPosition(tooltip, hotspot);
+                        }
                     }
                 });
                 
