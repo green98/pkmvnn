@@ -55,87 +55,93 @@
             background-color: white;
             border: 2px solid #3a7ca5;
             border-radius: 8px;
-            padding: 8px;
+            padding: 6px;
             box-shadow: 0 4px 8px rgba(0,0,0,0.3);
             opacity: 0;
             visibility: hidden;
             transition: opacity 0.3s, visibility 0.3s;
             z-index: 20;
-            width: 180px;
+            width: 120px;
+            max-width: 150px;
             transform-origin: center;
+            box-sizing: border-box;
         }
         
         .tooltip img {
             width: 100%;
             height: auto;
             border-radius: 4px;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
         
         .tooltip-title {
             font-weight: bold;
-            margin-bottom: 5px;
+            margin-bottom: 4px;
             color: #3a7ca5;
-            font-size: 14px;
+            font-size: 12px;
         }
         
         .tooltip::after {
             content: "";
             position: absolute;
-            border-width: 8px;
+            border-width: 6px;
             border-style: solid;
             border-color: #3a7ca5 transparent transparent transparent;
         }
         
         /* Các lớp định hướng cho tooltip */
         .tooltip-top {
-            bottom: 125%;
+            bottom: 100%;
             left: 50%;
             transform: translateX(-50%);
+            margin-bottom: 8px;
         }
         
         .tooltip-top::after {
             top: 100%;
             left: 50%;
-            margin-left: -8px;
+            margin-left: -6px;
         }
         
         .tooltip-bottom {
-            top: 125%;
+            top: 100%;
             left: 50%;
             transform: translateX(-50%);
+            margin-top: 8px;
         }
         
         .tooltip-bottom::after {
             bottom: 100%;
             left: 50%;
-            margin-left: -8px;
+            margin-left: -6px;
             border-color: transparent transparent #3a7ca5 transparent;
         }
         
         .tooltip-left {
-            right: 125%;
+            right: 100%;
             top: 50%;
             transform: translateY(-50%);
+            margin-right: 8px;
         }
         
         .tooltip-left::after {
             left: 100%;
             top: 50%;
-            margin-top: -8px;
+            margin-top: -6px;
             border-color: transparent transparent transparent #3a7ca5;
         }
         
         .tooltip-right {
-            left: 125%;
+            left: 100%;
             top: 50%;
             transform: translateY(-50%);
+            margin-left: 8px;
         }
         
         .tooltip-right::after {
             right: 100%;
             top: 50%;
-            margin-top: -8px;
+            margin-top: -6px;
             border-color: transparent #3a7ca5 transparent transparent;
         }
         
@@ -219,12 +225,12 @@
         /* Media query cho thiết bị di động */
         @media (max-width: 768px) {
             .tooltip {
-                width: 150px;
-                font-size: 12px;
+                width: 100px;
+                font-size: 10px;
             }
             
             .tooltip-title {
-                font-size: 12px;
+                font-size: 10px;
             }
         }
         
@@ -232,7 +238,7 @@
         .cave-images {
             display: flex;
             flex-direction: column;
-            gap: 5px;
+            gap: 4px;
         }
         
         .cave-images img {
@@ -240,11 +246,11 @@
         }
         
         .cave-image-label {
-            font-size: 10px;
+            font-size: 8px;
             color: #666;
             text-align: center;
-            margin-top: -5px;
-            margin-bottom: 5px;
+            margin-top: -3px;
+            margin-bottom: 3px;
         }
     </style>
 </head>
@@ -376,7 +382,7 @@
                             tooltip.dataset.originalFontSize = window.getComputedStyle(tooltip).fontSize;
                             tooltip.dataset.originalPadding = window.getComputedStyle(tooltip).padding;
                             tooltip.dataset.originalBorderRadius = window.getComputedStyle(tooltip).borderRadius;
-                            tooltip.dataset.originalArrowSize = 8; // Kích thước mũi tên gốc
+                            tooltip.dataset.originalArrowSize = 6; // Kích thước mũi tên gốc
                         }
                         
                         const originalWidth = parseFloat(tooltip.dataset.originalWidth);
@@ -392,25 +398,25 @@
                         const newBorderRadius = originalBorderRadius * scale;
                         const newArrowSize = originalArrowSize * scale;
                         
-                        // Giới hạn kích thước tối thiểu và tối đa (đã giảm xuống)
-                        const minTooltipWidth = 120;
-                        const maxTooltipWidth = 200;
+                        // Giới hạn kích thước tối thiểu và tối đa
+                        const minTooltipWidth = 80;
+                        const maxTooltipWidth = 150;
                         const clampedWidth = Math.max(minTooltipWidth, Math.min(maxTooltipWidth, newWidth));
                         
-                        const minFontSize = 10;
-                        const maxFontSize = 14;
+                        const minFontSize = 8;
+                        const maxFontSize = 12;
                         const clampedFontSize = Math.max(minFontSize, Math.min(maxFontSize, newFontSize));
                         
-                        const minPadding = 4;
-                        const maxPadding = 10;
+                        const minPadding = 3;
+                        const maxPadding = 8;
                         const clampedPadding = Math.max(minPadding, Math.min(maxPadding, newPadding));
                         
-                        const minBorderRadius = 4;
-                        const maxBorderRadius = 8;
+                        const minBorderRadius = 3;
+                        const maxBorderRadius = 6;
                         const clampedBorderRadius = Math.max(minBorderRadius, Math.min(maxBorderRadius, newBorderRadius));
                         
-                        const minArrowSize = 4;
-                        const maxArrowSize = 8;
+                        const minArrowSize = 3;
+                        const maxArrowSize = 6;
                         const clampedArrowSize = Math.max(minArrowSize, Math.min(maxArrowSize, newArrowSize));
                         
                         // Áp dụng kích thước mới
@@ -495,6 +501,12 @@
                 // Thêm lớp định hướng tương ứng
                 tooltip.classList.add(`tooltip-${bestPosition}`);
                 
+                // Đặt lại transform và margin để tránh xung đột
+                tooltip.style.transform = '';
+                tooltip.style.margin = '';
+                tooltip.style.left = '';
+                tooltip.style.top = '';
+                
                 // Điều chỉnh vị trí nếu cần thiết
                 setTimeout(() => {
                     const newTooltipRect = tooltip.getBoundingClientRect();
@@ -502,19 +514,27 @@
                     // Nếu tooltip vẫn bị tràn ra ngoài, điều chỉnh thêm
                     if (bestPosition === 'top' || bestPosition === 'bottom') {
                         if (newTooltipRect.left < 0) {
-                            tooltip.style.left = `${hotspotRect.left + hotspotRect.width / 2}px`;
-                            tooltip.style.transform = 'translateX(-50%)';
+                            tooltip.style.left = `${hotspotRect.left + hotspotRect.width / 2 - newTooltipRect.width / 2}px`;
+                            tooltip.style.top = bestPosition === 'top' ? 
+                                `${hotspotRect.top - newTooltipRect.height - 8}px` : 
+                                `${hotspotRect.bottom + 8}px`;
                         } else if (newTooltipRect.right > viewportWidth) {
-                            tooltip.style.left = `${hotspotRect.left + hotspotRect.width / 2 - (newTooltipRect.right - viewportWidth)}px`;
-                            tooltip.style.transform = 'translateX(-50%)';
+                            tooltip.style.left = `${viewportWidth - newTooltipRect.width}px`;
+                            tooltip.style.top = bestPosition === 'top' ? 
+                                `${hotspotRect.top - newTooltipRect.height - 8}px` : 
+                                `${hotspotRect.bottom + 8}px`;
                         }
                     } else if (bestPosition === 'left' || bestPosition === 'right') {
                         if (newTooltipRect.top < 0) {
-                            tooltip.style.top = `${hotspotRect.top + hotspotRect.height / 2}px`;
-                            tooltip.style.transform = 'translateY(-50%)';
+                            tooltip.style.top = `${hotspotRect.top + hotspotRect.height / 2 - newTooltipRect.height / 2}px`;
+                            tooltip.style.left = bestPosition === 'left' ? 
+                                `${hotspotRect.left - newTooltipRect.width - 8}px` : 
+                                `${hotspotRect.right + 8}px`;
                         } else if (newTooltipRect.bottom > viewportHeight) {
-                            tooltip.style.top = `${hotspotRect.top + hotspotRect.height / 2 - (newTooltipRect.bottom - viewportHeight)}px`;
-                            tooltip.style.transform = 'translateY(-50%)';
+                            tooltip.style.top = `${viewportHeight - newTooltipRect.height}px`;
+                            tooltip.style.left = bestPosition === 'left' ? 
+                                `${hotspotRect.left - newTooltipRect.width - 8}px` : 
+                                `${hotspotRect.right + 8}px`;
                         }
                     }
                 }, 10);
