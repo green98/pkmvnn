@@ -2,506 +2,318 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pokémon World</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Rubik:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Bản đồ Pokémon với Tooltips</title>
     <style>
-        :root {
-            --primary: #3b4cca;
-            --secondary: #ffde00;
-            --accent: #ff3c3c;
-            --dark: #0f172a;
-            --gray: #64748b;
-            --light-gray: #f8fafc;
-            --white: #ffffff;
-            --shadow-sm: 0 2px 5px rgba(0, 0, 0, 0.05);
-            --shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
-            --transition: all 0.25s ease;
-        }
-
-        * {
+        body {
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--light-gray);
-            color: var(--dark);
-            line-height: 1.5;
-            overflow-x: hidden;
-            min-height: 100vh;
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f0f0;
+            overflow: hidden; /* Ngăn thanh cuộn của trang */
+            height: 100vh;
             display: flex;
-            flex-direction: column;
-            position: relative;
-        }
-
-        /* Background decoration */
-        .bg-decoration {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            opacity: 0.05;
-            background-image: url('https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');
-            background-size: cover;
-            background-position: center;
-        }
-
-        /* Header */
-        header {
-            background-color: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(8px);
-            box-shadow: var(--shadow-sm);
-            padding: 0.5rem 0;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .header-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 1rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 0.4rem;
-            font-family: 'Rubik', sans-serif;
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: var(--primary);
-            text-decoration: none;
-        }
-
-        .logo i {
-            color: var(--accent);
-            font-size: 1rem;
-        }
-
-        /* Main Content */
-        main {
-            flex: 1;
-            padding: 1rem;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
             justify-content: center;
+            align-items: center;
         }
-
-        .menu-container {
-            max-width: 1000px;
-            width: 100%;
-            margin: 0 auto;
+        
+        .scroll-container {
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden; /* Ẩn thanh cuộn */
+            position: relative;
+            touch-action: pan-x pan-y; /* Cho phép kéo lướt theo cả hai hướng */
         }
-
-        .menu-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1rem;
-        }
-
-        .menu-item {
-            background-color: var(--white);
+        
+        .map-container {
+            position: absolute;
+            display: inline-block;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
             border-radius: 8px;
             overflow: hidden;
-            box-shadow: var(--shadow-sm);
-            transition: var(--transition);
+            transform-origin: center center;
+        }
+        
+        .pokemon-map {
+            display: block;
+            max-width: none; /* Xóa giới hạn max-width */
+        }
+        
+        .hotspot {
+            position: absolute;
             cursor: pointer;
-            text-decoration: none;
-            color: var(--dark);
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-            position: relative;
+            z-index: 10;
+            transition: all 0.2s ease;
         }
-
-        .menu-item:hover {
-            transform: translateY(-3px);
-            box-shadow: var(--shadow);
-        }
-
-        .menu-image {
-            height: 80px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .menu-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: var(--transition);
-        }
-
-        .menu-item:hover .menu-image img {
+        
+        .hotspot:hover {
             transform: scale(1.05);
         }
-
-        .menu-content {
-            padding: 1rem;
+        
+        .tooltip {
+            position: absolute;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: white;
+            border: 2px solid #3a7ca5;
+            border-radius: 8px;
+            padding: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+            z-index: 20;
+            width: 250px; /* Giảm kích thước tooltip cho di động */
+        }
+        
+        .tooltip img {
+            width: 100%;
+            height: auto;
+            border-radius: 4px;
+        }
+        
+        .tooltip-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #3a7ca5;
+        }
+        
+        .tooltip::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -8px;
+            border-width: 8px;
+            border-style: solid;
+            border-color: #3a7ca5 transparent transparent transparent;
+        }
+        
+        .hotspot:hover .tooltip {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        /* Pallet Town: 524,247 đến 542,264 */
+        .pallet-town {
+            left: 524px;
+            top: 247px;
+            width: 18px;
+            height: 17px;
+            background-color: rgba(255, 255, 0, 0.3);
+            border-radius: 4px;
+            border: 2px solid #ffcc00;
+        }
+        
+        /* Viridian City: 510,181 đến 542,212 */
+        .viridian-city {
+            left: 510px;
+            top: 181px;
+            width: 32px;
+            height: 31px;
+            background-color: rgba(0, 255, 0, 0.3);
+            border-radius: 4px;
+            border: 2px solid #00cc00;
+        }
+        
+        /* Thêm CSS cho nút điều khiển trên di động */
+        .controls {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 100;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            text-align: center;
-            flex-grow: 1;
+            gap: 10px;
         }
-
-        .menu-icon {
+        
+        .control-btn {
             width: 40px;
             height: 40px;
             border-radius: 50%;
+            background-color: rgba(58, 124, 165, 0.8);
+            color: white;
+            border: none;
             display: flex;
-            justify-content: center;
             align-items: center;
-            margin-bottom: 0.5rem;
-            font-size: 1.1rem;
-            position: relative;
-            z-index: 1;
-        }
-
-        .menu-icon::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            background-size: cover;
-            background-position: center;
-            opacity: 0.07;
-            z-index: -1;
-        }
-
-        .menu-icon.pokedex {
-            background: linear-gradient(135deg, rgba(255, 60, 60, 0.1) 0%, rgba(255, 60, 60, 0.2) 100%);
-            color: var(--accent);
-        }
-
-        .menu-icon.pokedex::before {
-            background-image: url('https://images.unsplash.com/photo-1611339555242-4a87df1b9b7d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');
-        }
-
-        .menu-icon.games {
-            background: linear-gradient(135deg, rgba(255, 222, 0, 0.1) 0%, rgba(255, 222, 0, 0.2) 100%);
-            color: var(--secondary);
-        }
-
-        .menu-icon.games::before {
-            background-image: url('https://images.unsplash.com/photo-1550745165-9bc0b252726f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');
-        }
-
-        .menu-icon.news {
-            background: linear-gradient(135deg, rgba(54, 145, 140, 0.1) 0%, rgba(54, 145, 140, 0.2) 100%);
-            color: #36918c;
-        }
-
-        .menu-icon.news::before {
-            background-image: url('https://images.unsplash.com/photo-1551818255-e6d10973cc4a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');
-        }
-
-        .menu-icon.shop {
-            background: linear-gradient(135deg, rgba(156, 39, 176, 0.1) 0%, rgba(156, 39, 176, 0.2) 100%);
-            color: #9c27b0;
-        }
-
-        .menu-icon.shop::before {
-            background-image: url('https://images.unsplash.com/photo-1566740933437-bc368f2a7964?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');
-        }
-
-        .menu-icon.community {
-            background: linear-gradient(135deg, rgba(255, 152, 0, 0.1) 0%, rgba(255, 152, 0, 0.2) 100%);
-            color: #ff9800;
-        }
-
-        .menu-icon.community::before {
-            background-image: url('https://images.unsplash.com/photo-1522252234503-e356532cafd5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');
-        }
-
-        .menu-icon.media {
-            background: linear-gradient(135deg, rgba(76, 175, 80, 0.1) 0%, rgba(76, 175, 80, 0.2) 100%);
-            color: #4caf50;
-        }
-
-        .menu-icon.media::before {
-            background-image: url('https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');
-        }
-
-        .menu-title {
-            font-size: 1rem;
-            font-weight: 600;
-            margin-bottom: 0.25rem;
-            color: var(--dark);
-        }
-
-        .menu-description {
-            font-size: 0.75rem;
-            color: var(--gray);
-            line-height: 1.3;
-        }
-
-        /* Footer */
-        footer {
-            background-color: var(--dark);
-            color: var(--white);
-            padding: 0.75rem;
-            text-align: center;
-        }
-
-        .footer-container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .footer-links {
-            display: flex;
             justify-content: center;
-            gap: 1rem;
-            margin-bottom: 0.5rem;
-            flex-wrap: wrap;
+            font-size: 20px;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
         }
-
-        .footer-links a {
-            color: rgba(255, 255, 255, 0.7);
-            text-decoration: none;
-            font-size: 0.75rem;
-            transition: var(--transition);
-        }
-
-        .footer-links a:hover {
-            color: var(--secondary);
-        }
-
-        .social-links {
-            display: flex;
-            justify-content: center;
-            gap: 0.75rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .social-links a {
-            width: 28px;
-            height: 28px;
-            background-color: rgba(255, 255, 255, 0.1);
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: var(--white);
-            transition: var(--transition);
-        }
-
-        .social-links a:hover {
-            background-color: var(--primary);
-            transform: translateY(-2px);
-        }
-
-        .copyright {
-            font-size: 0.7rem;
-            color: rgba(255, 255, 255, 0.5);
-            padding-top: 0.5rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        /* Responsive */
+        
+        /* Media query cho thiết bị di động */
         @media (max-width: 768px) {
-            .menu-grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 0.75rem;
-            }
-
-            .menu-content {
-                padding: 0.75rem;
-            }
-
-            .menu-icon {
-                width: 35px;
-                height: 35px;
-                font-size: 1rem;
-            }
-
-            .menu-title {
-                font-size: 0.9rem;
-            }
-
-            .menu-description {
-                font-size: 0.7rem;
-            }
-
-            .menu-image {
-                height: 70px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .menu-grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 0.5rem;
-            }
-
-            .logo {
-                font-size: 1.1rem;
-            }
-
-            .logo i {
-                font-size: 0.9rem;
-            }
-
-            .menu-image {
-                height: 60px;
-            }
-
-            .menu-content {
-                padding: 0.5rem;
-            }
-
-            .menu-icon {
-                width: 30px;
-                height: 30px;
-                font-size: 0.9rem;
-                margin-bottom: 0.25rem;
-            }
-
-            .menu-title {
-                font-size: 0.85rem;
-                margin-bottom: 0.1rem;
-            }
-
-            .menu-description {
-                font-size: 0.65rem;
-                line-height: 1.2;
+            .tooltip {
+                width: 200px; /* Giảm thêm kích thước tooltip cho màn hình nhỏ */
+                font-size: 14px;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Background decoration -->
-    <div class="bg-decoration"></div>
-
-    <!-- Header -->
-    <header>
-        <div class="header-container">
-            <a href="#" class="logo">
-                <i class="fas fa-bolt"></i>
-                Pokémon World
-            </a>
-        </div>
-    </header>
-
-    <!-- Main Content -->
-    <main>
-        <div class="menu-container">
-            <div class="menu-grid">
-                <a href="#" class="menu-item">
-                    <div class="menu-image">
-                        <img src="https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="Pokédex">
-                    </div>
-                    <div class="menu-content">
-                        <div class="menu-icon pokedex">
-                            <i class="fas fa-book"></i>
-                        </div>
-                        <h3 class="menu-title">Pokédex</h3>
-                        <p class="menu-description">Thông tin Pokémon</p>
-                    </div>
-                </a>
-
-                <a href="#" class="menu-item">
-                    <div class="menu-image">
-                        <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="Trò chơi">
-                    </div>
-                    <div class="menu-content">
-                        <div class="menu-icon games">
-                            <i class="fas fa-gamepad"></i>
-                        </div>
-                        <h3 class="menu-title">Trò chơi</h3>
-                        <p class="menu-description">Trải nghiệm game</p>
-                    </div>
-                </a>
-
-                <a href="#" class="menu-item">
-                    <div class="menu-image">
-                        <img src="https://images.unsplash.com/photo-1551818255-e6d10973cc4a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="Tin tức">
-                    </div>
-                    <div class="menu-content">
-                        <div class="menu-icon news">
-                            <i class="fas fa-newspaper"></i>
-                        </div>
-                        <h3 class="menu-title">Tin tức</h3>
-                        <p class="menu-description">Cập nhật mới</p>
-                    </div>
-                </a>
-
-                <a href="#" class="menu-item">
-                    <div class="menu-image">
-                        <img src="https://images.unsplash.com/photo-1566740933437-bc368f2a7964?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="Cửa hàng">
-                    </div>
-                    <div class="menu-content">
-                        <div class="menu-icon shop">
-                            <i class="fas fa-shopping-cart"></i>
-                        </div>
-                        <h3 class="menu-title">Cửa hàng</h3>
-                        <p class="menu-description">Sản phẩm chính hãng</p>
-                    </div>
-                </a>
-
-                <a href="#" class="menu-item">
-                    <div class="menu-image">
-                        <img src="https://images.unsplash.com/photo-1522252234503-e356532cafd5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="Cộng đồng">
-                    </div>
-                    <div class="menu-content">
-                        <div class="menu-icon community">
-                            <i class="fas fa-users"></i>
-                        </div>
-                        <h3 class="menu-title">Cộng đồng</h3>
-                        <p class="menu-description">Kết nối người hâm mộ</p>
-                    </div>
-                </a>
-
-                <a href="#" class="menu-item">
-                    <div class="menu-image">
-                        <img src="https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="Thư viện">
-                    </div>
-                    <div class="menu-content">
-                        <div class="menu-icon media">
-                            <i class="fas fa-photo-video"></i>
-                        </div>
-                        <h3 class="menu-title">Thư viện</h3>
-                        <p class="menu-description">Hình ảnh & video</p>
-                    </div>
-                </a>
+    <div class="scroll-container" id="scrollContainer">
+        <div class="map-container" id="mapContainer">
+            <img src="https://z-cdn-media.chatglm.cn/files/4b6e3ec0-a391-4ecd-b245-962e9df96734_1.png?auth_key=1756023901-0aa5fcf7b7c248fe9c8ad6c00f77229b-0-813a0793d376ca7a347cb3eb32fb8e36" alt="Bản đồ Kanto" class="pokemon-map" id="pokemonMap">
+            
+            <!-- Pallet Town: 524,247 đến 542,264 -->
+            <div class="hotspot pallet-town">
+                <div class="tooltip">
+                    <div class="tooltip-title">Pallet Town</div>
+                    <img src="https://wiki.pokemonrevolution.net/images/thumb/6/6b/Pallet_Town.png/600px-Pallet_Town.png" alt="Pallet Town">
+                </div>
+            </div>
+            
+            <!-- Viridian City: 510,181 đến 542,212 -->
+            <div class="hotspot viridian-city">
+                <div class="tooltip">
+                    <div class="tooltip-title">Viridian City</div>
+                    <img src="https://wiki.pokemonrevolution.net/images/thumb/9/9f/Viridian_City.png/600px-Viridian_City.png" alt="Viridian City">
+                </div>
             </div>
         </div>
-    </main>
+    </div>
+    
+    <!-- Nút điều khiển zoom -->
+    <div class="controls">
+        <button class="control-btn" id="zoomIn">+</button>
+        <button class="control-btn" id="zoomOut">-</button>
+        <button class="control-btn" id="resetZoom">⟲</button>
+    </div>
 
-    <!-- Footer -->
-    <footer>
-        <div class="footer-container">
-            <div class="footer-links">
-                <a href="#">Về chúng tôi</a>
-                <a href="#">Liên hệ</a>
-                <a href="#">Điều khoản</a>
-                <a href="#">Chính sách</a>
-            </div>
-            <div class="social-links">
-                <a href="#"><i class="fab fa-facebook-f"></i></a>
-                <a href="#"><i class="fab fa-twitter"></i></a>
-                <a href="#"><i class="fab fa-instagram"></i></a>
-                <a href="#"><i class="fab fa-youtube"></i></a>
-            </div>
-            <div class="copyright">
-                &copy; 2023 Pokémon World. Tất cả quyền được bảo lưu. Pokémon là thương hiệu của Nintendo.
-            </div>
-        </div>
-    </footer>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const scrollContainer = document.getElementById('scrollContainer');
+            const mapContainer = document.getElementById('mapContainer');
+            const pokemonMap = document.getElementById('pokemonMap');
+            const zoomInBtn = document.getElementById('zoomIn');
+            const zoomOutBtn = document.getElementById('zoomOut');
+            const resetZoomBtn = document.getElementById('resetZoom');
+            
+            let scale = 1;
+            let minScale = 0.5;
+            let maxScale = 3;
+            let isDragging = false;
+            let startX, startY, scrollLeft, scrollTop;
+            
+            // Đặt vị trí ban đầu của bản đồ
+            function initializeMap() {
+                const containerWidth = window.innerWidth;
+                const containerHeight = window.innerHeight;
+                const mapWidth = pokemonMap.naturalWidth;
+                const mapHeight = pokemonMap.naturalHeight;
+                
+                // Tính toán tỷ lệ để vừa màn hình
+                const scaleX = containerWidth / mapWidth;
+                const scaleY = containerHeight / mapHeight;
+                const fitScale = Math.min(scaleX, scaleY) * 0.9; // Giảm 10% để có khoảng đệm
+                
+                scale = Math.max(minScale, Math.min(maxScale, fitScale));
+                mapContainer.style.transform = `scale(${scale})`;
+                
+                // Căn giữa bản đồ
+                const scaledWidth = mapWidth * scale;
+                const scaledHeight = mapHeight * scale;
+                mapContainer.style.left = `${(containerWidth - scaledWidth) / 2}px`;
+                mapContainer.style.top = `${(containerHeight - scaledHeight) / 2}px`;
+            }
+            
+            // Khởi tạo bản đồ khi tải trang
+            pokemonMap.onload = initializeMap;
+            if (pokemonMap.complete) {
+                initializeMap();
+            }
+            
+            // Xử lý sự kiện kéo lướt
+            scrollContainer.addEventListener('mousedown', startDragging);
+            scrollContainer.addEventListener('touchstart', startDragging);
+            
+            function startDragging(e) {
+                isDragging = true;
+                scrollContainer.style.cursor = 'grabbing';
+                
+                // Lấy vị trí bắt đầu
+                if (e.type === 'touchstart') {
+                    startX = e.touches[0].pageX - scrollContainer.offsetLeft;
+                    startY = e.touches[0].pageY - scrollContainer.offsetTop;
+                } else {
+                    startX = e.pageX - scrollContainer.offsetLeft;
+                    startY = e.pageY - scrollContainer.offsetTop;
+                }
+                
+                scrollLeft = scrollContainer.scrollLeft;
+                scrollTop = scrollContainer.scrollTop;
+                
+                // Ngăn chọn văn bản khi kéo
+                e.preventDefault();
+            }
+            
+            scrollContainer.addEventListener('mousemove', drag);
+            scrollContainer.addEventListener('touchmove', drag);
+            
+            function drag(e) {
+                if (!isDragging) return;
+                e.preventDefault();
+                
+                let x, y;
+                if (e.type === 'touchmove') {
+                    x = e.touches[0].pageX - scrollContainer.offsetLeft;
+                    y = e.touches[0].pageY - scrollContainer.offsetTop;
+                } else {
+                    x = e.pageX - scrollContainer.offsetLeft;
+                    y = e.pageY - scrollContainer.offsetTop;
+                }
+                
+                const walkX = (x - startX) * 2; // Tăng tốc độ kéo
+                const walkY = (y - startY) * 2;
+                
+                scrollContainer.scrollLeft = scrollLeft - walkX;
+                scrollContainer.scrollTop = scrollTop - walkY;
+            }
+            
+            scrollContainer.addEventListener('mouseup', stopDragging);
+            scrollContainer.addEventListener('touchend', stopDragging);
+            scrollContainer.addEventListener('mouseleave', stopDragging);
+            
+            function stopDragging() {
+                isDragging = false;
+                scrollContainer.style.cursor = 'grab';
+            }
+            
+            // Xử lý phóng to/thu nhỏ
+            zoomInBtn.addEventListener('click', function() {
+                if (scale < maxScale) {
+                    scale += 0.1;
+                    mapContainer.style.transform = `scale(${scale})`;
+                }
+            });
+            
+            zoomOutBtn.addEventListener('click', function() {
+                if (scale > minScale) {
+                    scale -= 0.1;
+                    mapContainer.style.transform = `scale(${scale})`;
+                }
+            });
+            
+            resetZoomBtn.addEventListener('click', initializeMap);
+            
+            // Xử lý xoay màn hình
+            window.addEventListener('resize', initializeMap);
+            
+            // Xử lý sự kiện cuộn bằng chuột
+            scrollContainer.addEventListener('wheel', function(e) {
+                e.preventDefault();
+                
+                const delta = e.deltaY > 0 ? -0.1 : 0.1;
+                const newScale = Math.max(minScale, Math.min(maxScale, scale + delta));
+                
+                if (newScale !== scale) {
+                    scale = newScale;
+                    mapContainer.style.transform = `scale(${scale})`;
+                }
+            });
+        });
+    </script>
 </body>
 </html>
