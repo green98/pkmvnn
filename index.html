@@ -2,706 +2,1457 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Bản đồ Pokémon với Tooltips</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vé Loto Online - Chọn Số May Mắn</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+        
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #8b5cf6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            --success-gradient: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            --warning-gradient: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            --danger-gradient: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            --locked-gradient: linear-gradient(135deg, #ef4444 0%, #f97316 100%);
+        }
+        
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+        
         body {
-            margin: 0;
-            padding: 0;
-            font-family: 'Arial', sans-serif;
-            background-color: #f0f0f0;
-            overflow: hidden;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            color: #1e293b;
+            min-height: 100vh;
         }
         
-        .scroll-container {
-            width: 100vw;
-            height: 100vh;
-            overflow: hidden;
-            position: relative;
-            touch-action: pan-x pan-y;
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
         
-        .map-container {
-            position: absolute;
-            display: inline-block;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-            border-radius: 8px;
-            overflow: hidden;
-            transform-origin: center center;
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
         
-        .pokemon-map {
-            display: block;
-            max-width: none;
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
         }
         
-        .hotspot {
-            position: absolute;
+        @keyframes numberPop {
+            0% { 
+                transform: scale(0.8) rotate(-10deg); 
+                opacity: 0; 
+            }
+            50% { 
+                transform: scale(1.15) rotate(5deg); 
+            }
+            100% { 
+                transform: scale(1) rotate(0deg); 
+                opacity: 1; 
+            }
+        }
+        
+        @keyframes glow {
+            0% { box-shadow: 0 0 5px rgba(99, 102, 241, 0.5); }
+            50% { box-shadow: 0 0 20px rgba(99, 102, 241, 0.8), 0 0 30px rgba(139, 92, 246, 0.6); }
+            100% { box-shadow: 0 0 5px rgba(99, 102, 241, 0.5); }
+        }
+        
+        @keyframes pokemonFloat {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        @keyframes shimmer {
+            0% { background-position: -1000px 0; }
+            100% { background-position: 1000px 0; }
+        }
+        
+        .number-grid {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 8px;
+        }
+        
+        .number-btn {
+            aspect-ratio: 1;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             cursor: pointer;
-            z-index: 10;
+            font-weight: 600;
+            font-size: 0.85rem;
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(145deg, #ffffff, #f1f5f9);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(226, 232, 240, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .number-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--gradient);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: -1;
+        }
+        
+        .number-btn:hover:not(.locked) {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 8px 16px rgba(99, 102, 241, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            border-color: rgba(99, 102, 241, 0.6);
+        }
+        
+        .number-btn.selected {
+            color: white;
+            box-shadow: 0 8px 16px rgba(99, 102, 241, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            border-color: rgba(99, 102, 241, 0.8);
+            font-weight: 700;
+            transform: scale(1.08);
+        }
+        
+        .number-btn.selected::before {
+            opacity: 1;
+        }
+        
+        .number-btn.locked {
+            cursor: not-allowed;
+            opacity: 0.7;
+            background: linear-gradient(145deg, #fee2e2, #fecaca);
+            border-color: rgba(239, 68, 68, 0.6);
+            color: #b91c1c;
+            font-weight: 600;
+            position: relative;
+            transform: scale(0.95);
+        }
+        
+        .number-btn.locked::after {
+            content: '\f023';
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+            position: absolute;
+            top: 3px;
+            right: 3px;
+            font-size: 0.65rem;
+            color: #b91c1c;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            width: 16px;
+            height: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .bingo-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 12px;
+            position: relative;
+        }
+        
+        .bingo-container {
+            position: relative;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .bingo-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            opacity: 0.85;
+            z-index: 0;
+            filter: blur(1px);
+        }
+        
+        .bingo-grid-overlay {
+            position: relative;
+            z-index: 1;
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 12px;
+        }
+        
+        .bingo-cell {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.7);
+            color: #4c1d95;
+            border-radius: 16px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            animation: numberPop 0.5s ease forwards;
+            opacity: 0;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(8px);
+            z-index: 2;
+        }
+        
+        .bingo-cell::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.2) 0%, rgba(99, 102, 241, 0.2) 100%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+        
+        .bingo-cell::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 70%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+        
+        .bingo-cell:hover {
+            transform: translateY(-5px) scale(1.08);
+            box-shadow: 0 12px 30px rgba(99, 102, 241, 0.4);
+            background: rgba(255, 255, 255, 0.85);
+        }
+        
+        .bingo-cell:hover::before {
+            opacity: 1;
+        }
+        
+        .bingo-cell:hover::after {
+            opacity: 1;
+        }
+        
+        .bingo-cell:nth-child(5n+1) {
+            animation-delay: 0.05s;
+        }
+        
+        .bingo-cell:nth-child(5n+2) {
+            animation-delay: 0.1s;
+        }
+        
+        .bingo-cell:nth-child(5n+3) {
+            animation-delay: 0.15s;
+        }
+        
+        .bingo-cell:nth-child(5n+4) {
+            animation-delay: 0.2s;
+        }
+        
+        .bingo-cell:nth-child(5n+5) {
+            animation-delay: 0.25s;
+        }
+        
+        .bingo-cell-inner {
+            position: relative;
+            z-index: 1;
+            transform: translateZ(0);
+            backface-visibility: hidden;
+        }
+        
+        .pokemon-image {
+            position: absolute;
+            bottom: -15px;
+            right: -15px;
+            width: 140px;
+            height: 140px;
+            z-index: 0;
+            opacity: 0.9;
+            animation: pokemonFloat 4s ease-in-out infinite;
+            filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.3));
+        }
+        
+        .security-info-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            background: rgba(255, 255, 255, 0.85);
+            border-radius: 30px;
+            padding: 10px 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            animation: fadeIn 0.5s ease forwards;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+        
+        .pokemon-name {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: #4c1d95;
+            text-transform: capitalize;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 120px;
+        }
+        
+        .security-code {
+            font-family: 'Courier New', monospace;
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: #4c1d95;
+            letter-spacing: 1.5px;
+            white-space: nowrap;
+        }
+        
+        .barcode-container {
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        
+        .barcode {
+            display: flex;
+            height: 25px;
+            align-items: flex-end;
+        }
+        
+        .barcode-bar {
+            background-color: #4c1d95;
+            margin: 0 1px;
+            width: 2px;
+            transition: height 0.3s ease;
+        }
+        
+        .copy-btn {
+            background: rgba(99, 102, 241, 0.1);
+            border: none;
+            color: #4c1d95;
+            cursor: pointer;
+            padding: 6px;
+            border-radius: 8px;
             transition: all 0.2s ease;
         }
         
-        .hotspot:hover {
-            transform: scale(1.2);
+        .copy-btn:hover {
+            background: rgba(99, 102, 241, 0.2);
+            transform: scale(1.1);
         }
         
-        .tooltip {
-            position: absolute;
-            background-color: white;
-            border: 2px solid #3a7ca5;
-            border-radius: 8px;
-            padding: 6px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s, visibility 0.3s;
-            z-index: 20;
-            width: 120px;
-            max-width: 150px;
-            transform-origin: center;
-            box-sizing: border-box;
+        .selected-number-tag {
+            background: var(--gradient);
+            color: white;
+            border-radius: 20px;
+            padding: 6px 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+            transition: all 0.3s ease;
         }
         
-        .tooltip img {
-            width: 100%;
-            height: auto;
-            border-radius: 4px;
-            margin-bottom: 6px;
+        .selected-number-tag:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4);
         }
         
-        .tooltip-title {
-            font-weight: bold;
-            margin-bottom: 4px;
-            color: #3a7ca5;
-            font-size: 12px;
+        .locked-number-tag {
+            background: var(--danger-gradient);
+            color: white;
+            border-radius: 20px;
+            padding: 6px 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+            transition: all 0.3s ease;
         }
         
-        .tooltip::after {
-            content: "";
-            position: absolute;
-            border-width: 6px;
-            border-style: solid;
-            border-color: #3a7ca5 transparent transparent transparent;
+        .locked-number-tag:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4);
         }
         
-        /* Các lớp định hướng cho tooltip */
-        .tooltip-top {
-            bottom: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            margin-bottom: 8px;
+        .btn-primary {
+            background: var(--gradient);
+            color: white;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 16px rgba(99, 102, 241, 0.3);
+            font-weight: 600;
+            border: none;
         }
         
-        .tooltip-top::after {
-            top: 100%;
-            left: 50%;
-            margin-left: -6px;
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.4);
         }
         
-        .tooltip-bottom {
-            top: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            margin-top: 8px;
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
         }
         
-        .tooltip-bottom::after {
-            bottom: 100%;
-            left: 50%;
-            margin-left: -6px;
-            border-color: transparent transparent #3a7ca5 transparent;
+        .btn-secondary {
+            background: linear-gradient(145deg, #ffffff, #f8fafc);
+            color: #1e293b;
+            border: 2px solid #e2e8f0;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
         }
         
-        .tooltip-left {
-            right: 100%;
-            top: 50%;
-            transform: translateY(-50%);
-            margin-right: 8px;
+        .btn-secondary:hover {
+            background: linear-gradient(145deg, #f8fafc, #e2e8f0);
+            border-color: #cbd5e1;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
         }
         
-        .tooltip-left::after {
-            left: 100%;
-            top: 50%;
-            margin-top: -6px;
-            border-color: transparent transparent transparent #3a7ca5;
+        .btn-danger {
+            background: var(--danger-gradient);
+            color: white;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+            border: none;
         }
         
-        .tooltip-right {
-            left: 100%;
-            top: 50%;
-            transform: translateY(-50%);
-            margin-left: 8px;
+        .btn-danger:hover {
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4);
         }
         
-        .tooltip-right::after {
-            right: 100%;
-            top: 50%;
-            margin-top: -6px;
-            border-color: transparent #3a7ca5 transparent transparent;
+        .btn-warning {
+            background: var(--warning-gradient);
+            color: white;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+            border: none;
         }
         
-        .hotspot:hover .tooltip,
-        .hotspot.active .tooltip {
-            opacity: 1;
-            visibility: visible;
+        .btn-warning:hover {
+            background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(245, 158, 11, 0.4);
         }
         
-        /* Pallet Town: 524,247 đến 542,264 */
-        .pallet-town {
-            left: 524px;
-            top: 247px;
-            width: 18px;
-            height: 17px;
-            border-radius: 4px;
+        .btn-info {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+            border: none;
         }
         
-        /* Viridian City: 510,181 đến 542,212 */
-        .viridian-city {
-            left: 510px;
-            top: 181px;
-            width: 32px;
-            height: 31px;
-            border-radius: 4px;
+        .btn-info:hover {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
         }
         
-        /* Pewter City: 527,94 đến 694,134 */
-        .pewter-city {
-            left: 527px;
-            top: 94px;
-            width: 167px;
-            height: 40px;
-            border-radius: 4px;
+        .card {
+            background: linear-gradient(145deg, #ffffff, #f8fafc);
+            border-radius: 20px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(226, 232, 240, 0.5);
         }
         
-        /* Cerulean City: 667,108 đến 696,137 */
-        .cerulean-city {
-            left: 667px;
-            top: 108px;
-            width: 29px;
-            height: 29px;
-            border-radius: 4px;
+        .card:hover {
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.12);
+            transform: translateY(-2px);
         }
         
-        /* Cerulean Cave: 667,107 đến 676,116 */
-        .cerulean-cave {
-            left: 667px;
-            top: 107px;
-            width: 9px;
-            height: 9px;
-            border-radius: 4px;
+        .header-gradient {
+            background: var(--gradient);
+            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.25);
         }
         
-        /* Thêm CSS cho nút điều khiển trên di động */
-        .controls {
+        .modal-backdrop {
+            background-color: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(12px);
+        }
+        
+        .loading-spinner {
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top: 3px solid white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .pokemon-loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        .history-item {
+            animation: slideIn 0.3s ease;
+        }
+        
+        .ticket-date {
+            font-size: 0.75rem;
+            color: #64748b;
+            display: flex;
+            align-items: center;
+            margin-top: 4px;
+        }
+        
+        .ticket-date i {
+            margin-right: 4px;
+        }
+        
+        .shimmer {
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            background-size: 1000px 100%;
+            animation: shimmer 2s infinite;
+        }
+        
+        @media (max-width: 768px) {
+            .number-grid {
+                grid-template-columns: repeat(7, 1fr);
+                gap: 6px;
+            }
+            
+            .number-btn {
+                font-size: 0.8rem;
+                border-radius: 8px;
+            }
+            
+            .bingo-cell {
+                font-size: 0.9rem;
+            }
+            
+            .pokemon-image {
+                width: 100px;
+                height: 100px;
+                bottom: -10px;
+                right: -10px;
+            }
+            
+            .security-info-container {
+                flex-direction: column;
+                gap: 8px;
+                padding: 10px;
+            }
+            
+            .pokemon-name {
+                max-width: 100%;
+                text-align: center;
+            }
+            
+            .barcode-container {
+                height: 25px;
+            }
+            
+            .barcode {
+                height: 15px;
+            }
+        }
+        
+        /* Toast Notification */
+        .toast {
             position: fixed;
             bottom: 20px;
             right: 20px;
-            z-index: 100;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        
-        .control-btn {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background-color: rgba(58, 124, 165, 0.8);
-            color: white;
-            border: none;
+            background: white;
+            padding: 16px 24px;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
             display: flex;
             align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            cursor: pointer;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            gap: 12px;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            z-index: 1000;
         }
         
-        /* Media query cho thiết bị di động */
-        @media (max-width: 768px) {
-            .tooltip {
-                width: 100px;
-                font-size: 10px;
-            }
-            
-            .tooltip-title {
-                font-size: 10px;
-            }
+        .toast.show {
+            transform: translateX(0);
         }
         
-        /* CSS cho các hình ảnh trong tooltip Cerulean Cave */
-        .cave-images {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
+        .toast.success {
+            border-left: 5px solid #10b981;
         }
         
-        .cave-images img {
-            margin-bottom: 0;
+        .toast.error {
+            border-left: 5px solid #ef4444;
         }
         
-        .cave-image-label {
-            font-size: 8px;
-            color: #666;
-            text-align: center;
-            margin-top: -3px;
-            margin-bottom: 3px;
+        .toast.info {
+            border-left: 5px solid #3b82f6;
+        }
+        
+        .toast.warning {
+            border-left: 5px solid #f59e0b;
         }
     </style>
 </head>
 <body>
-    <div class="scroll-container" id="scrollContainer">
-        <div class="map-container" id="mapContainer">
-            <img src="https://z-cdn-media.chatglm.cn/files/4b6e3ec0-a391-4ecd-b245-962e9df96734_1.png?auth_key=1756023901-0aa5fcf7b7c248fe9c8ad6c00f77229b-0-813a0793d376ca7a347cb3eb32fb8e36" alt="Bản đồ Kanto" class="pokemon-map" id="pokemonMap">
-            
-            <!-- Pallet Town: 524,247 đến 542,264 -->
-            <div class="hotspot pallet-town" data-location="Pallet Town">
-                <div class="tooltip tooltip-top">
-                    <div class="tooltip-title">Pallet Town</div>
-                    <img src="https://wiki.pokemonrevolution.net/images/thumb/6/6b/Pallet_Town.png/600px-Pallet_Town.png" alt="Pallet Town">
+    <!-- Header -->
+    <header class="header-gradient text-white shadow-lg">
+        <div class="container mx-auto px-4 py-6">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <div class="w-12 h-12 bg-white bg-opacity-20 rounded-xl flex items-center justify-center backdrop-blur-sm">
+                        <i class="fas fa-dice text-2xl"></i>
+                    </div>
+                    <h1 class="text-2xl font-bold">Vé Loto Online</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button onclick="app.toggleHistory()" class="w-10 h-10 bg-white bg-opacity-20 rounded-xl flex items-center justify-center hover:bg-opacity-30 transition backdrop-blur-sm">
+                        <i class="fas fa-history"></i>
+                    </button>
                 </div>
             </div>
-            
-            <!-- Viridian City: 510,181 đến 542,212 -->
-            <div class="hotspot viridian-city" data-location="Viridian City">
-                <div class="tooltip tooltip-top">
-                    <div class="tooltip-title">Viridian City</div>
-                    <img src="https://wiki.pokemonrevolution.net/images/thumb/9/9f/Viridian_City.png/600px-Viridian_City.png" alt="Viridian City">
+        </div>
+    </header>
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <div class="grid lg:grid-cols-5 gap-6">
+            <!-- Left Panel - Number Selection -->
+            <div class="lg:col-span-3">
+                <div class="card p-6 mb-6">
+                    <div class="mb-6">
+                        <h2 class="text-xl font-bold text-gray-800 mb-2">Chọn số may mắn</h2>
+                        <p class="text-gray-500">Chọn từ 1 đến 99 số</p>
+                    </div>
+                    
+                    <!-- Quick Select Buttons - First Row -->
+                    <div class="mb-4 flex flex-wrap gap-3">
+                        <button onclick="app.quickSelect(1)" class="btn-info px-4 py-2 rounded-lg text-sm">
+                            <i class="fas fa-hashtag mr-1.5"></i>Chọn 1 số
+                        </button>
+                        <button onclick="app.quickSelect(6)" class="btn-secondary px-4 py-2 rounded-lg text-sm">
+                            <i class="fas fa-hashtag mr-1.5"></i>Chọn 6 số
+                        </button>
+                        <button onclick="app.quickSelect(10)" class="btn-secondary px-4 py-2 rounded-lg text-sm">
+                            <i class="fas fa-hashtag mr-1.5"></i>Chọn 10 số
+                        </button>
+                        <button onclick="app.quickSelect(25)" class="btn-secondary px-4 py-2 rounded-lg text-sm">
+                            <i class="fas fa-th mr-1.5"></i>Chọn 25 số
+                        </button>
+                    </div>
+                    
+                    <!-- Action Buttons - Second Row -->
+                    <div class="mb-6 flex flex-wrap gap-3">
+                        <button onclick="app.lockNumbers()" class="btn-warning px-4 py-2 rounded-lg text-sm">
+                            <i class="fas fa-lock mr-1.5"></i>Khóa số
+                        </button>
+                        <button onclick="app.randomSelect()" class="btn-secondary px-4 py-2 rounded-lg text-sm">
+                            <i class="fas fa-random mr-1.5"></i>Ngẫu nhiên
+                        </button>
+                        <button onclick="app.clearLocks()" class="btn-danger px-4 py-2 rounded-lg text-sm">
+                            <i class="fas fa-unlock-alt mr-1.5"></i>Xóa khóa
+                        </button>
+                        <button onclick="app.clearSelection()" class="btn-danger px-4 py-2 rounded-lg text-sm">
+                            <i class="fas fa-times mr-1.5"></i>Xóa
+                        </button>
+                    </div>
+                    
+                    <!-- Number Grid -->
+                    <div class="number-grid mb-6" id="numberGrid">
+                        <!-- Numbers will be generated by JavaScript -->
+                    </div>
+                    
+                    <!-- Add Ticket Button -->
+                    <button onclick="app.addTicket()" class="btn-primary w-full py-3 rounded-xl flex items-center justify-center" id="addTicketBtn" disabled>
+                        <span id="btnText"><i class="fas fa-plus-circle mr-2"></i>Thêm vé</span>
+                        <div class="loading-spinner ml-2 hidden" id="loadingSpinner"></div>
+                    </button>
                 </div>
             </div>
-            
-            <!-- Pewter City: 527,94 đến 694,134 -->
-            <div class="hotspot pewter-city" data-location="Pewter City">
-                <div class="tooltip tooltip-top">
-                    <div class="tooltip-title">Pewter City</div>
-                    <img src="https://wiki.pokemonrevolution.net/images/thumb/6/6c/Pewter_City.png/600px-Pewter_City.png" alt="Pewter City">
-                </div>
-            </div>
-            
-            <!-- Cerulean City: 667,108 đến 696,137 -->
-            <div class="hotspot cerulean-city" data-location="Cerulean City">
-                <div class="tooltip tooltip-top">
-                    <div class="tooltip-title">Cerulean City</div>
-                    <img src="https://wiki.pokemonrevolution.net/images/thumb/1/18/Cerulean_City.png/600px-Cerulean_City.png" alt="Cerulean City">
-                </div>
-            </div>
-            
-            <!-- Cerulean Cave: 667,107 đến 676,116 -->
-            <div class="hotspot cerulean-cave" data-location="Cerulean Cave">
-                <div class="tooltip tooltip-top">
-                    <div class="tooltip-title">Cerulean Cave</div>
-                    <div class="cave-images">
-                        <div>
-                            <div class="cave-image-label">Tầng 1</div>
-                            <img src="https://wiki.pokemonrevolution.net/images/thumb/6/6d/Cerulean_Cave_1F.png/150px-Cerulean_Cave_1F.png" alt="Cerulean Cave 1F">
+            <!-- Right Panel - Selected Numbers & Bingo -->
+            <div class="lg:col-span-2">
+                <div class="card p-6 sticky top-6">
+                    <h3 class="text-lg font-bold text-gray-800 mb-5 flex items-center justify-between">
+                        <span><i class="fas fa-list-check mr-2 text-indigo-500"></i>Số đã chọn</span>
+                        <button onclick="app.shareSelection()" class="text-sm text-indigo-500 hover:text-indigo-600">
+                            <i class="fas fa-share-alt"></i>
+                        </button>
+                    </h3>
+                    
+                    <div class="mb-6">
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="text-sm font-medium text-gray-500">Tổng số:</span>
+                            <span class="text-sm font-bold text-gray-800" id="selectedCount">0</span>
                         </div>
-                        <div>
-                            <div class="cave-image-label">Tầng 2</div>
-                            <img src="https://wiki.pokemonrevolution.net/images/thumb/b/b3/Cerulean_Cave_2F.png/150px-Cerulean_Cave_2F.png" alt="Cerulean Cave 2F">
+                        <div class="flex flex-wrap gap-2 min-h-[50px] p-3 bg-gray-50 rounded-xl" id="selectedNumbers">
+                            <span class="text-gray-400 text-sm italic">Chưa chọn số nào</span>
                         </div>
-                        <div>
-                            <div class="cave-image-label">Tầng Hầm</div>
-                            <img src="https://wiki.pokemonrevolution.net/images/thumb/5/53/Cerulean_Cave_B1F.png/150px-Cerulean_Cave_B1F.png" alt="Cerulean Cave B1F">
+                    </div>
+                    
+                    <div class="mb-6">
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="text-sm font-medium text-gray-500">Số đã khóa:</span>
+                            <span class="text-sm font-bold text-gray-800" id="lockedCount">0</span>
+                        </div>
+                        <div class="flex flex-wrap gap-2 min-h-[50px] p-3 bg-gray-50 rounded-xl" id="lockedNumbers">
+                            <span class="text-gray-400 text-sm italic">Chưa có số nào bị khóa</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Bingo Grid Container -->
+                    <div id="bingoContainer" style="display: none;">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center justify-between">
+                            <span><i class="fas fa-border-all mr-2 text-indigo-500"></i>Bảng 5x5</span>
+                            <div class="flex items-center gap-2">
+                                <button onclick="app.refreshPokemon()" class="text-sm text-indigo-500 hover:text-indigo-600" title="Thay Pokemon">
+                                    <i class="fas fa-sync-alt"></i>
+                                </button>
+                                <button onclick="app.shareBingo()" class="text-sm text-indigo-500 hover:text-indigo-600">
+                                    <i class="fas fa-share-alt"></i>
+                                </button>
+                            </div>
+                        </h3>
+                        <div class="security-info-container">
+                            <div class="pokemon-name" id="pokemonName">Đang tải Pokemon...</div>
+                            <div class="security-code" id="securityCode">XXXX-XXXX</div>
+                            <div class="barcode-container">
+                                <div class="barcode" id="barcode"></div>
+                            </div>
+                            <button onclick="app.copySecurityCode()" class="copy-btn" title="Sao chép mã">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <div class="bingo-container">
+                            <div class="bingo-bg" id="bingoBg"></div>
+                            <div class="bingo-grid-overlay" id="bingoGrid">
+                                <!-- Bingo cells will be generated by JavaScript -->
+                            </div>
+                            <img class="pokemon-image" id="pokemonImage" src="" alt="Pokemon">
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+    </main>
+    <!-- History Modal -->
+    <div id="historyModal" class="fixed inset-0 modal-backdrop hidden items-center justify-center z-50">
+        <div class="bg-white rounded-2xl p-6 max-w-2xl mx-4 max-h-[80vh] overflow-hidden transform scale-0 transition-transform duration-300" id="historyContent">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold text-gray-800">Lịch sử vé</h3>
+                <button onclick="app.toggleHistory()" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <div id="historyList" class="space-y-3 max-h-[60vh] overflow-y-auto">
+                <!-- History items will be generated by JavaScript -->
+            </div>
+        </div>
     </div>
-    
-    <!-- Nút điều khiển zoom -->
-    <div class="controls">
-        <button class="control-btn" id="zoomIn">+</button>
-        <button class="control-btn" id="zoomOut">-</button>
-        <button class="control-btn" id="resetZoom">⟲</button>
+    <!-- Success Modal -->
+    <div id="successModal" class="fixed inset-0 modal-backdrop hidden items-center justify-center z-50">
+        <div class="bg-white rounded-2xl p-8 max-w-md mx-4 transform scale-0 transition-transform duration-300" id="modalContent">
+            <div class="text-center">
+                <div class="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <i class="fas fa-check text-white text-3xl"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-800 mb-3">Đặt vé thành công!</h3>
+                <p class="text-gray-600 mb-6">Vé của bạn đã được ghi nhận. Chúc bạn may mắn!</p>
+                <div class="flex gap-3 justify-center">
+                    <button onclick="app.shareTicket()" class="btn-secondary px-6 py-3 rounded-xl">
+                        <i class="fas fa-share-alt mr-2"></i>Chia sẻ
+                    </button>
+                    <button onclick="app.closeModal()" class="btn-primary px-6 py-3 rounded-xl">
+                        Đóng
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
-
+    <!-- Toast Container -->
+    <div id="toastContainer"></div>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const scrollContainer = document.getElementById('scrollContainer');
-            const mapContainer = document.getElementById('mapContainer');
-            const pokemonMap = document.getElementById('pokemonMap');
-            const zoomInBtn = document.getElementById('zoomIn');
-            const zoomOutBtn = document.getElementById('zoomOut');
-            const resetZoomBtn = document.getElementById('resetZoom');
-            const hotspots = document.querySelectorAll('.hotspot');
+        // App Object - Main Application Controller
+        const app = {
+            // State
+            selectedNumbers: [],
+            lockedNumbers: [],
+            ticketHistory: [],
+            currentTicket: null,
+            bingoNumbers: [],
+            currentPokemon: null,
+            currentSecurityCode: null,
             
-            let scale = 1;
-            let minScale = 0.5;
-            let maxScale = 3;
-            let isDragging = false;
-            let startX, startY, scrollLeft, scrollTop;
-            let activeHotspot = null;
+            // Initialize application
+            init() {
+                this.initializeGrid();
+                this.bindEvents();
+                this.updateSelectedDisplay();
+                this.updateLockedDisplay();
+            },
             
-            // Lưu kích thước gốc của bản đồ
-            let mapOriginalWidth = 0;
-            let mapOriginalHeight = 0;
-            
-            // Đặt vị trí ban đầu của bản đồ
-            function initializeMap() {
-                const containerWidth = window.innerWidth;
-                const containerHeight = window.innerHeight;
+            // Initialize number grid
+            initializeGrid() {
+                const grid = document.getElementById('numberGrid');
+                grid.innerHTML = '';
                 
-                // Lưu kích thước gốc của bản đồ
-                if (mapOriginalWidth === 0 || mapOriginalHeight === 0) {
-                    mapOriginalWidth = pokemonMap.naturalWidth;
-                    mapOriginalHeight = pokemonMap.naturalHeight;
+                for (let i = 1; i <= 99; i++) {
+                    const btn = document.createElement('button');
+                    btn.className = 'number-btn';
+                    btn.textContent = i.toString().padStart(2, '0');
+                    btn.dataset.number = i;
+                    btn.addEventListener('click', () => this.toggleNumber(i));
+                    grid.appendChild(btn);
                 }
-                
-                // Tính toán tỷ lệ để vừa màn hình
-                const scaleX = containerWidth / mapOriginalWidth;
-                const scaleY = containerHeight / mapOriginalHeight;
-                const fitScale = Math.min(scaleX, scaleY) * 0.9; // Giảm 10% để có khoảng đệm
-                
-                scale = Math.max(minScale, Math.min(maxScale, fitScale));
-                mapContainer.style.transform = `scale(${scale})`;
-                
-                // Căn giữa bản đồ
-                const scaledWidth = mapOriginalWidth * scale;
-                const scaledHeight = mapOriginalHeight * scale;
-                mapContainer.style.left = `${(containerWidth - scaledWidth) / 2}px`;
-                mapContainer.style.top = `${(containerHeight - scaledHeight) / 2}px`;
-                
-                // Cập nhật kích thước tooltip
-                updateTooltipsScale();
-            }
+            },
             
-            // Cập nhật kích thước tooltip theo tỷ lệ zoom
-            function updateTooltipsScale() {
-                hotspots.forEach(hotspot => {
-                    const tooltip = hotspot.querySelector('.tooltip');
-                    if (tooltip) {
-                        // Lưu kích thước gốc nếu chưa có
-                        if (!tooltip.dataset.originalWidth) {
-                            tooltip.dataset.originalWidth = tooltip.offsetWidth;
-                            tooltip.dataset.originalFontSize = window.getComputedStyle(tooltip).fontSize;
-                            tooltip.dataset.originalPadding = window.getComputedStyle(tooltip).padding;
-                            tooltip.dataset.originalBorderRadius = window.getComputedStyle(tooltip).borderRadius;
-                            tooltip.dataset.originalArrowSize = 6; // Kích thước mũi tên gốc
-                        }
-                        
-                        const originalWidth = parseFloat(tooltip.dataset.originalWidth);
-                        const originalFontSize = parseFloat(tooltip.dataset.originalFontSize);
-                        const originalPadding = parseFloat(tooltip.dataset.originalPadding);
-                        const originalBorderRadius = parseFloat(tooltip.dataset.originalBorderRadius);
-                        const originalArrowSize = parseFloat(tooltip.dataset.originalArrowSize);
-                        
-                        // Tính toán kích thước mới dựa trên tỷ lệ zoom
-                        const newWidth = originalWidth * scale;
-                        const newFontSize = originalFontSize * scale;
-                        const newPadding = originalPadding * scale;
-                        const newBorderRadius = originalBorderRadius * scale;
-                        const newArrowSize = originalArrowSize * scale;
-                        
-                        // Giới hạn kích thước tối thiểu và tối đa
-                        const minTooltipWidth = 80;
-                        const maxTooltipWidth = 150;
-                        const clampedWidth = Math.max(minTooltipWidth, Math.min(maxTooltipWidth, newWidth));
-                        
-                        const minFontSize = 8;
-                        const maxFontSize = 12;
-                        const clampedFontSize = Math.max(minFontSize, Math.min(maxFontSize, newFontSize));
-                        
-                        const minPadding = 3;
-                        const maxPadding = 8;
-                        const clampedPadding = Math.max(minPadding, Math.min(maxPadding, newPadding));
-                        
-                        const minBorderRadius = 3;
-                        const maxBorderRadius = 6;
-                        const clampedBorderRadius = Math.max(minBorderRadius, Math.min(maxBorderRadius, newBorderRadius));
-                        
-                        const minArrowSize = 3;
-                        const maxArrowSize = 6;
-                        const clampedArrowSize = Math.max(minArrowSize, Math.min(maxArrowSize, newArrowSize));
-                        
-                        // Áp dụng kích thước mới
-                        tooltip.style.width = `${clampedWidth}px`;
-                        tooltip.style.fontSize = `${clampedFontSize}px`;
-                        tooltip.style.padding = `${clampedPadding}px`;
-                        tooltip.style.borderRadius = `${clampedBorderRadius}px`;
-                        
-                        // Cập nhật kích thước mũi tên
-                        updateTooltipArrowSize(tooltip, clampedArrowSize);
-                        
-                        // Nếu tooltip đang hiển thị, cập nhật lại vị trí
-                        if (hotspot.classList.contains('active')) {
-                            adjustTooltipPosition(tooltip, hotspot);
-                        }
-                    }
-                });
-            }
+            // Bind global events
+            bindEvents() {
+                // Add any global event listeners here
+            },
             
-            // Cập nhật kích thước mũi tên tooltip
-            function updateTooltipArrowSize(tooltip, arrowSize) {
-                const styleSheet = document.styleSheets[0];
-                const tooltipClasses = ['tooltip-top::after', 'tooltip-bottom::after', 'tooltip-left::after', 'tooltip-right::after'];
-                
-                tooltipClasses.forEach(selector => {
-                    const rules = Array.from(styleSheet.cssRules).filter(rule => 
-                        rule.selectorText && rule.selectorText.includes(selector)
-                    );
+            // Shuffle array using Fisher-Yates algorithm
+            shuffleArray(array) {
+                const newArray = [...array];
+                for (let i = newArray.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+                }
+                return newArray;
+            },
+            
+            // Get random Pokemon (including Gen 9)
+            async getRandomPokemon() {
+                try {
+                    // There are 1010 Pokemon in the API as of Gen 9
+                    const randomId = Math.floor(Math.random() * 1010) + 1;
+                    const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${randomId}`);
+                    const data = await response.json();
                     
-                    if (rules.length > 0) {
-                        if (selector.includes('top') || selector.includes('bottom')) {
-                            rules[0].style.borderTopWidth = `${arrowSize}px`;
-                            rules[0].style.borderLeftWidth = `${arrowSize}px`;
-                            rules[0].style.borderRightWidth = `${arrowSize}px`;
-                            rules[0].style.marginLeft = `-${arrowSize}px`;
-                        } else {
-                            rules[0].style.borderTopWidth = `${arrowSize}px`;
-                            rules[0].style.borderBottomWidth = `${arrowSize}px`;
-                            rules[0].style.borderLeftWidth = `${arrowSize}px`;
-                            rules[0].style.marginTop = `-${arrowSize}px`;
-                        }
-                    }
-                });
-            }
+                    // Get the official artwork
+                    const imageUrl = data.sprites.other['official-artwork'].front_default;
+                    
+                    return {
+                        name: data.name,
+                        image: imageUrl,
+                        id: data.id
+                    };
+                } catch (error) {
+                    console.error('Error fetching Pokemon:', error);
+                    return null;
+                }
+            },
             
-            // Điều chỉnh vị trí tooltip để không bị tràn ra ngoài màn hình
-            function adjustTooltipPosition(tooltip, hotspot) {
-                // Xóa tất cả các lớp định hướng
-                tooltip.classList.remove('tooltip-top', 'tooltip-bottom', 'tooltip-left', 'tooltip-right');
+            // Generate security code from selected numbers
+            generateSecurityCode() {
+                if (this.selectedNumbers.length === 0) return null;
                 
-                // Lấy thông tin vị trí và kích thước
-                const hotspotRect = hotspot.getBoundingClientRect();
-                const tooltipRect = tooltip.getBoundingClientRect();
-                const viewportWidth = window.innerWidth;
-                const viewportHeight = window.innerHeight;
+                // Sort numbers for consistent code generation
+                const sortedNumbers = [...this.selectedNumbers].sort((a, b) => a - b);
                 
-                // Tính toán khoảng cách đến các cạnh
-                const spaceTop = hotspotRect.top;
-                const spaceBottom = viewportHeight - hotspotRect.bottom;
-                const spaceLeft = hotspotRect.left;
-                const spaceRight = viewportWidth - hotspotRect.right;
-                
-                // Xác định hướng hiển thị tốt nhất
-                let bestPosition = 'top';
-                let maxSpace = spaceTop;
-                
-                if (spaceBottom > maxSpace) {
-                    maxSpace = spaceBottom;
-                    bestPosition = 'bottom';
+                // Create a simple hash from the numbers
+                let hash = 0;
+                for (let i = 0; i < sortedNumbers.length; i++) {
+                    hash = ((hash << 5) - hash) + sortedNumbers[i];
+                    hash |= 0; // Convert to 32-bit integer
                 }
                 
-                if (spaceLeft > maxSpace) {
-                    maxSpace = spaceLeft;
-                    bestPosition = 'left';
+                // Convert to positive number and format as XXXX-XXXX
+                const positiveHash = Math.abs(hash);
+                const part1 = (positiveHash % 10000).toString().padStart(4, '0');
+                const part2 = ((positiveHash >> 16) % 10000).toString().padStart(4, '0');
+                
+                return `${part1}-${part2}`;
+            },
+            
+            // Generate barcode from security code
+            generateBarcode(securityCode) {
+                if (!securityCode) return '';
+                
+                const barcode = document.getElementById('barcode');
+                barcode.innerHTML = '';
+                
+                // Remove dashes from security code
+                const code = securityCode.replace(/-/g, '');
+                
+                // Generate bars based on the code
+                for (let i = 0; i < code.length; i++) {
+                    const bar = document.createElement('div');
+                    bar.className = 'barcode-bar';
+                    
+                    // Height based on digit value
+                    const digit = parseInt(code[i]);
+                    const height = 5 + (digit * 2.5); // Height between 5 and 30
+                    
+                    bar.style.height = `${height}px`;
+                    barcode.appendChild(bar);
+                }
+            },
+            
+            // Copy security code to clipboard
+            copySecurityCode() {
+                if (!this.currentSecurityCode) return;
+                
+                navigator.clipboard.writeText(this.currentSecurityCode)
+                    .then(() => {
+                        this.showToast('Đã sao chép mã bảo mật!', 'success');
+                    })
+                    .catch(err => {
+                        console.error('Failed to copy security code: ', err);
+                        this.showToast('Không thể sao chép mã bảo mật!', 'error');
+                    });
+            },
+            
+            // Load Pokemon background
+            async loadPokemonBackground() {
+                const pokemon = await this.getRandomPokemon();
+                if (pokemon) {
+                    this.currentPokemon = pokemon;
+                    const bgElement = document.getElementById('bingoBg');
+                    const imgElement = document.getElementById('pokemonImage');
+                    const nameElement = document.getElementById('pokemonName');
+                    
+                    bgElement.style.backgroundImage = `url(${pokemon.image})`;
+                    imgElement.src = pokemon.image;
+                    imgElement.alt = pokemon.name;
+                    
+                    // Format tên Pokemon: viết hoa chữ cái đầu
+                    const formattedName = pokemon.name.charAt(0).toUpperCase() + pokemon.name.slice(1);
+                    nameElement.textContent = formattedName;
+                    
+                    // Generate and display security code
+                    this.currentSecurityCode = this.generateSecurityCode();
+                    const codeElement = document.getElementById('securityCode');
+                    codeElement.textContent = this.currentSecurityCode;
+                    
+                    // Generate and display barcode
+                    this.generateBarcode(this.currentSecurityCode);
+                }
+            },
+            
+            // Refresh Pokemon
+            async refreshPokemon() {
+                if (this.selectedNumbers.length === 25) {
+                    await this.loadPokemonBackground();
+                    this.showToast('Đã thay Pokemon!', 'success');
+                }
+            },
+            
+            // Toggle number selection
+            toggleNumber(num) {
+                // Check if number is locked
+                if (this.lockedNumbers.includes(num)) {
+                    this.showToast(`Số ${num.toString().padStart(2, '0')} đã bị khóa và không thể chọn lại!`, 'warning');
+                    return;
                 }
                 
-                if (spaceRight > maxSpace) {
-                    maxSpace = spaceRight;
-                    bestPosition = 'right';
+                const index = this.selectedNumbers.indexOf(num);
+                const btn = document.querySelector(`[data-number="${num}"]`);
+                
+                if (index > -1) {
+                    this.selectedNumbers.splice(index, 1);
+                    btn.classList.remove('selected');
+                } else {
+                    this.selectedNumbers.push(num);
+                    btn.classList.add('selected');
                 }
                 
-                // Thêm lớp định hướng tương ứng
-                tooltip.classList.add(`tooltip-${bestPosition}`);
+                this.updateSelectedDisplay();
+                this.updateAddButton();
                 
-                // Đặt lại transform và margin để tránh xung đột
-                tooltip.style.transform = '';
-                tooltip.style.margin = '';
-                tooltip.style.left = '';
-                tooltip.style.top = '';
+                // Check if we have exactly 25 numbers to show the bingo grid
+                if (this.selectedNumbers.length === 25) {
+                    this.showBingoGrid();
+                } else {
+                    this.hideBingoGrid();
+                }
+            },
+            
+            // Update selected numbers display
+            updateSelectedDisplay() {
+                const container = document.getElementById('selectedNumbers');
+                const count = document.getElementById('selectedCount');
                 
-                // Điều chỉnh vị trí nếu cần thiết
+                count.textContent = `${this.selectedNumbers.length} số`;
+                
+                if (this.selectedNumbers.length === 0) {
+                    container.innerHTML = '<span class="text-gray-400 text-sm italic">Chưa chọn số nào</span>';
+                } else {
+                    container.innerHTML = this.selectedNumbers
+                        .sort((a, b) => a - b)
+                        .map(num => `<span class="selected-number-tag">${num.toString().padStart(2, '0')}</span>`)
+                        .join('');
+                }
+            },
+            
+            // Update locked numbers display
+            updateLockedDisplay() {
+                const container = document.getElementById('lockedNumbers');
+                const count = document.getElementById('lockedCount');
+                
+                count.textContent = `${this.lockedNumbers.length} số`;
+                
+                if (this.lockedNumbers.length === 0) {
+                    container.innerHTML = '<span class="text-gray-400 text-sm italic">Chưa có số nào bị khóa</span>';
+                } else {
+                    container.innerHTML = this.lockedNumbers
+                        .sort((a, b) => a - b)
+                        .map(num => `<span class="locked-number-tag">${num.toString().padStart(2, '0')}</span>`)
+                        .join('');
+                }
+            },
+            
+            // Update add button state
+            updateAddButton() {
+                const btn = document.getElementById('addTicketBtn');
+                btn.disabled = this.selectedNumbers.length === 0;
+            },
+            
+            // Clear all locked numbers
+            clearLocks() {
+                if (this.lockedNumbers.length === 0) {
+                    this.showToast('Không có số nào bị khóa để xóa!', 'info');
+                    return;
+                }
+                
+                // Remove locked class from all locked numbers
+                this.lockedNumbers.forEach(num => {
+                    const btn = document.querySelector(`[data-number="${num}"]`);
+                    btn.classList.remove('locked');
+                });
+                
+                // Clear locked numbers array
+                this.lockedNumbers = [];
+                
+                // Update display
+                this.updateLockedDisplay();
+                
+                this.showToast('Đã xóa tất cả các số đã khóa!', 'success');
+            },
+            
+            // Lock currently selected numbers
+            lockNumbers() {
+                if (this.selectedNumbers.length > 0) {
+                    // Lock currently selected numbers
+                    this.selectedNumbers.forEach(num => {
+                        if (!this.lockedNumbers.includes(num)) {
+                            this.lockedNumbers.push(num);
+                            const btn = document.querySelector(`[data-number="${num}"]`);
+                            btn.classList.remove('selected');
+                            btn.classList.add('locked');
+                        }
+                    });
+                    
+                    // Clear current selection
+                    this.selectedNumbers = [];
+                    this.updateSelectedDisplay();
+                    this.updateLockedDisplay();
+                    this.updateAddButton();
+                    this.hideBingoGrid();
+                    
+                    this.showToast('Các số đã chọn đã bị khóa!', 'success');
+                } else {
+                    this.showToast('Vui lòng chọn ít nhất một số trước khi khóa!', 'warning');
+                }
+            },
+            
+            // Quick select
+            quickSelect(count) {
+                this.clearSelection();
+                const numbers = Array.from({length: 99}, (_, i) => i + 1);
+                
+                // Filter out locked numbers
+                const availableNumbers = numbers.filter(num => !this.lockedNumbers.includes(num));
+                
+                if (availableNumbers.length < count) {
+                    this.showToast(`Không đủ số khả dụng! Chỉ còn ${availableNumbers.length} số chưa bị khóa.`, 'warning');
+                    return;
+                }
+                
+                for (let i = 0; i < count; i++) {
+                    const randomIndex = Math.floor(Math.random() * availableNumbers.length);
+                    const num = availableNumbers.splice(randomIndex, 1)[0];
+                    this.selectedNumbers.push(num);
+                    const btn = document.querySelector(`[data-number="${num}"]`);
+                    if (btn) btn.classList.add('selected');
+                }
+                
+                this.updateSelectedDisplay();
+                this.updateAddButton();
+                
+                if (this.selectedNumbers.length === 25) {
+                    this.showBingoGrid();
+                }
+            },
+            
+            // Random select
+            randomSelect() {
+                const count = Math.floor(Math.random() * 10) + 6;
+                this.quickSelect(count);
+            },
+            
+            // Clear selection
+            clearSelection() {
+                this.selectedNumbers = [];
+                this.bingoNumbers = [];
+                this.currentSecurityCode = null;
+                document.querySelectorAll('.number-btn').forEach(btn => {
+                    btn.classList.remove('selected');
+                });
+                this.updateSelectedDisplay();
+                this.updateAddButton();
+                this.hideBingoGrid();
+            },
+            
+            // Show bingo grid
+            async showBingoGrid() {
+                const container = document.getElementById('bingoContainer');
+                const grid = document.getElementById('bingoGrid');
+                
+                // Shuffle the selected numbers instead of sorting
+                this.bingoNumbers = this.shuffleArray([...this.selectedNumbers]);
+                
+                // Clear the grid
+                grid.innerHTML = '';
+                
+                // Load Pokemon background
+                await this.loadPokemonBackground();
+                
+                // Create 5x5 grid with shuffled numbers
+                for (let i = 0; i < 25; i++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'bingo-cell';
+                    
+                    // Create inner div for better content control
+                    const inner = document.createElement('div');
+                    inner.className = 'bingo-cell-inner';
+                    inner.textContent = this.bingoNumbers[i].toString().padStart(2, '0');
+                    
+                    cell.appendChild(inner);
+                    grid.appendChild(cell);
+                }
+                
+                // Show the container
+                container.style.display = 'block';
+            },
+            
+            // Hide bingo grid
+            hideBingoGrid() {
+                const container = document.getElementById('bingoContainer');
+                container.style.display = 'none';
+            },
+            
+            // Format date for display
+            formatDate(date) {
+                const d = new Date(date);
+                const day = d.getDate().toString().padStart(2, '0');
+                const month = (d.getMonth() + 1).toString().padStart(2, '0');
+                const year = d.getFullYear();
+                const hours = d.getHours().toString().padStart(2, '0');
+                const minutes = d.getMinutes().toString().padStart(2, '0');
+                
+                return `${day}/${month}/${year} ${hours}:${minutes}`;
+            },
+            
+            // Add ticket
+            addTicket() {
+                if (this.selectedNumbers.length === 0) return;
+                
+                // Show loading
+                const btn = document.getElementById('addTicketBtn');
+                const btnText = document.getElementById('btnText');
+                const spinner = document.getElementById('loadingSpinner');
+                
+                btn.disabled = true;
+                btnText.classList.add('hidden');
+                spinner.classList.remove('hidden');
+                
+                // Simulate processing
                 setTimeout(() => {
-                    const newTooltipRect = tooltip.getBoundingClientRect();
+                    // Create ticket with proper timestamp
+                    const now = new Date();
+                    this.currentTicket = {
+                        id: Date.now(),
+                        numbers: [...this.selectedNumbers].sort((a, b) => a - b),
+                        time: now.toLocaleString('vi-VN'),
+                        timestamp: now.getTime(), // Add timestamp for 24h cleanup
+                        date: this.formatDate(now), // Add formatted date for display
+                        isBingo: this.selectedNumbers.length === 25,
+                        pokemon: this.currentPokemon,
+                        securityCode: this.currentSecurityCode
+                    };
                     
-                    // Nếu tooltip vẫn bị tràn ra ngoài, điều chỉnh thêm
-                    if (bestPosition === 'top' || bestPosition === 'bottom') {
-                        if (newTooltipRect.left < 0) {
-                            tooltip.style.left = `${hotspotRect.left + hotspotRect.width / 2 - newTooltipRect.width / 2}px`;
-                            tooltip.style.top = bestPosition === 'top' ? 
-                                `${hotspotRect.top - newTooltipRect.height - 8}px` : 
-                                `${hotspotRect.bottom + 8}px`;
-                        } else if (newTooltipRect.right > viewportWidth) {
-                            tooltip.style.left = `${viewportWidth - newTooltipRect.width}px`;
-                            tooltip.style.top = bestPosition === 'top' ? 
-                                `${hotspotRect.top - newTooltipRect.height - 8}px` : 
-                                `${hotspotRect.bottom + 8}px`;
+                    // Lock the selected numbers after adding ticket
+                    this.selectedNumbers.forEach(num => {
+                        if (!this.lockedNumbers.includes(num)) {
+                            this.lockedNumbers.push(num);
+                            const btn = document.querySelector(`[data-number="${num}"]`);
+                            btn.classList.remove('selected');
+                            btn.classList.add('locked');
                         }
-                    } else if (bestPosition === 'left' || bestPosition === 'right') {
-                        if (newTooltipRect.top < 0) {
-                            tooltip.style.top = `${hotspotRect.top + hotspotRect.height / 2 - newTooltipRect.height / 2}px`;
-                            tooltip.style.left = bestPosition === 'left' ? 
-                                `${hotspotRect.left - newTooltipRect.width - 8}px` : 
-                                `${hotspotRect.right + 8}px`;
-                        } else if (newTooltipRect.bottom > viewportHeight) {
-                            tooltip.style.top = `${viewportHeight - newTooltipRect.height}px`;
-                            tooltip.style.left = bestPosition === 'left' ? 
-                                `${hotspotRect.left - newTooltipRect.width - 8}px` : 
-                                `${hotspotRect.right + 8}px`;
-                        }
+                    });
+                    
+                    // Save to history (only in memory, not in localStorage)
+                    this.ticketHistory.unshift(this.currentTicket);
+                    if (this.ticketHistory.length > 50) this.ticketHistory.pop(); // Keep last 50 tickets
+                    
+                    // Hide loading
+                    btnText.classList.remove('hidden');
+                    spinner.classList.add('hidden');
+                    
+                    // Show success modal
+                    this.showSuccessModal();
+                    
+                    // Clear selection
+                    this.selectedNumbers = [];
+                    this.updateSelectedDisplay();
+                    this.updateLockedDisplay();
+                    this.updateAddButton();
+                    this.hideBingoGrid();
+                    
+                    // Show toast
+                    this.showToast('Đặt vé thành công! Các số đã chọn đã bị khóa.', 'success');
+                }, 1000);
+            },
+            
+            // Toggle history modal
+            toggleHistory() {
+                const modal = document.getElementById('historyModal');
+                const content = document.getElementById('historyContent');
+                
+                if (modal.classList.contains('hidden')) {
+                    // Show history
+                    this.updateHistoryDisplay();
+                    modal.classList.remove('hidden');
+                    modal.classList.add('flex');
+                    setTimeout(() => {
+                        content.classList.add('scale-100');
+                    }, 10);
+                } else {
+                    // Hide history
+                    content.classList.remove('scale-100');
+                    setTimeout(() => {
+                        modal.classList.add('hidden');
+                        modal.classList.remove('flex');
+                    }, 300);
+                }
+            },
+            
+            // Update history display
+            updateHistoryDisplay() {
+                const container = document.getElementById('historyList');
+                
+                if (this.ticketHistory.length === 0) {
+                    container.innerHTML = '<p class="text-gray-500 text-center py-8">Chưa có vé nào trong phiên làm việc hiện tại</p>';
+                    return;
+                }
+                
+                container.innerHTML = this.ticketHistory.map(ticket => {
+                    // Calculate time ago
+                    const ticketTime = new Date(ticket.timestamp);
+                    const now = new Date();
+                    const diffMs = now - ticketTime;
+                    const diffHrs = Math.floor(diffMs / (1000 * 60 * 60));
+                    const diffMins = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+                    
+                    let timeAgo = '';
+                    if (diffHrs > 0) {
+                        timeAgo = `${diffHrs} giờ ${diffMins} phút trước`;
+                    } else {
+                        timeAgo = `${diffMins} phút trước`;
                     }
+                    
+                    return `
+                        <div class="history-item bg-gray-50 rounded-lg p-4">
+                            <div class="flex justify-between items-start mb-2">
+                                <span class="text-sm font-medium text-gray-600">#${ticket.id} ${ticket.isBingo ? '<span class="bg-blue-500 text-white px-2 py-1 rounded text-xs">Bingo 5x5</span>' : ''}</span>
+                                <span class="text-xs text-gray-500">${timeAgo}</span>
+                            </div>
+                            <div class="ticket-date">
+                                <i class="far fa-calendar-alt"></i>
+                                ${ticket.date || this.formatDate(ticket.timestamp)}
+                            </div>
+                            <div class="flex flex-wrap gap-1 mb-2 mt-2">
+                                ${ticket.numbers.map(num => `<span class="bg-white px-2 py-1 rounded text-xs">${num.toString().padStart(2, '0')}</span>`).join('')}
+                            </div>
+                            ${ticket.pokemon ? `<div class="text-xs text-gray-500 flex items-center"><i class="fas fa-dragon mr-1"></i> ${ticket.pokemon.name.charAt(0).toUpperCase() + ticket.pokemon.name.slice(1)}</div>` : ''}
+                            ${ticket.securityCode ? `<div class="text-xs text-gray-500 flex items-center"><i class="fas fa-barcode mr-1"></i> ${ticket.securityCode}</div>` : ''}
+                        </div>
+                    `;
+                }).join('');
+            },
+            
+            // Share selection
+            shareSelection() {
+                if (this.selectedNumbers.length === 0) {
+                    this.showToast('Chưa có số nào để chia sẻ!', 'error');
+                    return;
+                }
+                
+                const text = `Số loto của tôi: ${this.selectedNumbers.sort((a, b) => a - b).map(n => n.toString().padStart(2, '0')).join(', ')}`;
+                
+                if (navigator.share) {
+                    navigator.share({
+                        title: 'Vé Loto Online',
+                        text: text
+                    });
+                } else {
+                    navigator.clipboard.writeText(text);
+                    this.showToast('Đã sao chép vào clipboard!', 'success');
+                }
+            },
+            
+            // Share bingo
+            shareBingo() {
+                if (this.selectedNumbers.length !== 25 || this.bingoNumbers.length === 0) {
+                    this.showToast('Không có bảng Bingo để chia sẻ!', 'error');
+                    return;
+                }
+                
+                let text = 'Bảng Bingo 5x5 của tôi:\n\n';
+                
+                for (let i = 0; i < 5; i++) {
+                    text += this.bingoNumbers.slice(i * 5, (i + 1) * 5).map(n => n.toString().padStart(2, '0')).join(' ') + '\n';
+                }
+                
+                if (this.currentPokemon) {
+                    text += `\n\nPokemon may mắn: ${this.currentPokemon.name.charAt(0).toUpperCase() + this.currentPokemon.name.slice(1)}`;
+                }
+                
+                if (this.currentSecurityCode) {
+                    text += `\n\nMã bảo mật: ${this.currentSecurityCode}`;
+                }
+                
+                if (navigator.share) {
+                    navigator.share({
+                        title: 'Vé Loto Online - Bingo',
+                        text: text
+                    });
+                } else {
+                    navigator.clipboard.writeText(text);
+                    this.showToast('Đã sao chép vào clipboard!', 'success');
+                }
+            },
+            
+            // Share ticket
+            shareTicket() {
+                if (!this.currentTicket) return;
+                
+                let text = `Vé loto #${this.currentTicket.id}\nSố: ${this.currentTicket.numbers.map(n => n.toString().padStart(2, '0')).join(', ')}\nThời gian: ${this.currentTicket.time}`;
+                
+                if (this.currentTicket.pokemon) {
+                    text += `\nPokemon may mắn: ${this.currentTicket.pokemon.name.charAt(0).toUpperCase() + this.currentTicket.pokemon.name.slice(1)}`;
+                }
+                
+                if (this.currentTicket.securityCode) {
+                    text += `\nMã bảo mật: ${this.currentTicket.securityCode}`;
+                }
+                
+                if (navigator.share) {
+                    navigator.share({
+                        title: 'Vé Loto Online',
+                        text: text
+                    });
+                } else {
+                    navigator.clipboard.writeText(text);
+                    this.showToast('Đã sao chép vào clipboard!', 'success');
+                }
+            },
+            
+            // Show success modal
+            showSuccessModal() {
+                const modal = document.getElementById('successModal');
+                const modalContent = document.getElementById('modalContent');
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                setTimeout(() => {
+                    modalContent.classList.add('scale-100');
                 }, 10);
+            },
+            
+            // Close modal
+            closeModal() {
+                const modal = document.getElementById('successModal');
+                const modalContent = document.getElementById('modalContent');
+                modalContent.classList.remove('scale-100');
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                    modal.classList.remove('flex');
+                }, 300);
+            },
+            
+            // Show toast notification
+            showToast(message, type = 'info') {
+                const container = document.getElementById('toastContainer');
+                const toast = document.createElement('div');
+                toast.className = `toast ${type}`;
+                
+                const icon = {
+                    success: 'fa-check-circle',
+                    error: 'fa-exclamation-circle',
+                    info: 'fa-info-circle',
+                    warning: 'fa-exclamation-triangle'
+                }[type];
+                
+                toast.innerHTML = `
+                    <i class="fas ${icon} text-lg"></i>
+                    <span>${message}</span>
+                `;
+                
+                container.appendChild(toast);
+                
+                setTimeout(() => toast.classList.add('show'), 10);
+                
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                    setTimeout(() => toast.remove(), 300);
+                }, 3000);
             }
-            
-            // Khởi tạo bản đồ khi tải trang
-            pokemonMap.onload = initializeMap;
-            if (pokemonMap.complete) {
-                initializeMap();
-            }
-            
-            // Xử lý sự kiện kéo lướt
-            scrollContainer.addEventListener('mousedown', startDragging);
-            scrollContainer.addEventListener('touchstart', startDragging);
-            
-            function startDragging(e) {
-                isDragging = true;
-                scrollContainer.style.cursor = 'grabbing';
-                
-                // Lấy vị trí bắt đầu
-                if (e.type === 'touchstart') {
-                    startX = e.touches[0].pageX - scrollContainer.offsetLeft;
-                    startY = e.touches[0].pageY - scrollContainer.offsetTop;
-                } else {
-                    startX = e.pageX - scrollContainer.offsetLeft;
-                    startY = e.pageY - scrollContainer.offsetTop;
-                }
-                
-                scrollLeft = scrollContainer.scrollLeft;
-                scrollTop = scrollContainer.scrollTop;
-                
-                // Ngăn chọn văn bản khi kéo
-                e.preventDefault();
-            }
-            
-            scrollContainer.addEventListener('mousemove', drag);
-            scrollContainer.addEventListener('touchmove', drag);
-            
-            function drag(e) {
-                if (!isDragging) return;
-                e.preventDefault();
-                
-                let x, y;
-                if (e.type === 'touchmove') {
-                    x = e.touches[0].pageX - scrollContainer.offsetLeft;
-                    y = e.touches[0].pageY - scrollContainer.offsetTop;
-                } else {
-                    x = e.pageX - scrollContainer.offsetLeft;
-                    y = e.pageY - scrollContainer.offsetTop;
-                }
-                
-                const walkX = (x - startX) * 2; // Tăng tốc độ kéo
-                const walkY = (y - startY) * 2;
-                
-                scrollContainer.scrollLeft = scrollLeft - walkX;
-                scrollContainer.scrollTop = scrollTop - walkY;
-            }
-            
-            scrollContainer.addEventListener('mouseup', stopDragging);
-            scrollContainer.addEventListener('touchend', stopDragging);
-            scrollContainer.addEventListener('mouseleave', stopDragging);
-            
-            function stopDragging() {
-                isDragging = false;
-                scrollContainer.style.cursor = 'grab';
-            }
-            
-            // Xử lý phóng to/thu nhỏ
-            zoomInBtn.addEventListener('click', function() {
-                if (scale < maxScale) {
-                    scale += 0.1;
-                    mapContainer.style.transform = `scale(${scale})`;
-                    updateTooltipsScale();
-                }
-            });
-            
-            zoomOutBtn.addEventListener('click', function() {
-                if (scale > minScale) {
-                    scale -= 0.1;
-                    mapContainer.style.transform = `scale(${scale})`;
-                    updateTooltipsScale();
-                }
-            });
-            
-            resetZoomBtn.addEventListener('click', function() {
-                initializeMap();
-            });
-            
-            // Xử lý xoay màn hình
-            window.addEventListener('resize', function() {
-                initializeMap();
-            });
-            
-            // Xử lý sự kiện cuộn bằng chuột
-            scrollContainer.addEventListener('wheel', function(e) {
-                e.preventDefault();
-                
-                const delta = e.deltaY > 0 ? -0.1 : 0.1;
-                const newScale = Math.max(minScale, Math.min(maxScale, scale + delta));
-                
-                if (newScale !== scale) {
-                    scale = newScale;
-                    mapContainer.style.transform = `scale(${scale})`;
-                    updateTooltipsScale();
-                }
-            });
-            
-            // Xử lý tương tác với hotspot trên di động
-            hotspots.forEach(hotspot => {
-                // Xử lý click cho di động
-                hotspot.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    
-                    const tooltip = hotspot.querySelector('.tooltip');
-                    
-                    // Nếu đã có hotspot đang active, đóng nó
-                    if (activeHotspot && activeHotspot !== hotspot) {
-                        activeHotspot.classList.remove('active');
-                    }
-                    
-                    // Toggle trạng thái active của hotspot hiện tại
-                    hotspot.classList.toggle('active');
-                    
-                    // Cập nhật hotspot đang active
-                    activeHotspot = hotspot.classList.contains('active') ? hotspot : null;
-                    
-                    // Điều chỉnh vị trí tooltip nếu hiển thị
-                    if (hotspot.classList.contains('active') && tooltip) {
-                        adjustTooltipPosition(tooltip, hotspot);
-                    }
-                });
-                
-                // Xử lý hover cho desktop
-                hotspot.addEventListener('mouseenter', function() {
-                    if (window.innerWidth > 768) { // Chỉ áp dụng cho desktop
-                        const tooltip = hotspot.querySelector('.tooltip');
-                        hotspot.classList.add('active');
-                        activeHotspot = hotspot;
-                        
-                        if (tooltip) {
-                            adjustTooltipPosition(tooltip, hotspot);
-                        }
-                    }
-                });
-                
-                hotspot.addEventListener('mouseleave', function() {
-                    if (window.innerWidth > 768) { // Chỉ áp dụng cho desktop
-                        hotspot.classList.remove('active');
-                        activeHotspot = null;
-                    }
-                });
-            });
-            
-            // Đóng tooltip khi click ra ngoài
-            document.addEventListener('click', function() {
-                if (activeHotspot) {
-                    activeHotspot.classList.remove('active');
-                    activeHotspot = null;
-                }
-            });
-            
-            // Ngăn sự kiện click lan tỏa từ hotspot
-            hotspots.forEach(hotspot => {
-                hotspot.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                });
-            });
+        };
+        
+        // Initialize app when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            app.init();
         });
     </script>
 </body>
