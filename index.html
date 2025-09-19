@@ -568,7 +568,7 @@
             flex: 1;
             overflow-y: auto;
             padding: 10px;
-            max-height: calc(100vh - 380px); /* Giới hạn chiều cao danh sách video */
+            max-height: none; /* Bỏ giới hạn chiều cao để không cần cuộn */
             position: relative;
             z-index: 1;
         }
@@ -1097,7 +1097,7 @@
                     }
                 }
                 
-                // Extract video count
+                // Extract video count - Cải thiện để lấy chính xác hơn
                 let videoCount = 0;
                 const videoCountMatch = htmlText.match(/"videosCountText":\s*{\s*"accessibility":\s*{\s*"accessibilityData":\s*{\s*"label":\s*"([\d,]+)\s*video"/);
                 if (videoCountMatch && videoCountMatch[1]) {
@@ -1108,10 +1108,16 @@
                     if (videosCountMatch && videosCountMatch[1]) {
                         videoCount = parseInt(videosCountMatch[1].replace(/,/g, ''));
                     } else {
-                        // Phương pháp dự phòng khác
+                        // Phương pháp dự phòng khác - Tìm trong tab videos
                         const videosTabMatch = htmlText.match(/<tab[^>]*data-tab-name="Videos"[^>]*>\s*<span[^>]*>([\d,]+)<\/span>/);
                         if (videosTabMatch && videosTabMatch[1]) {
                             videoCount = parseInt(videosTabMatch[1].replace(/,/g, ''));
+                        } else {
+                            // Phương pháp dự phòng cuối cùng - Tìm trong dữ liệu JSON
+                            const jsonMatch = htmlText.match(/"videoCount":\s*"([\d,]+)"/);
+                            if (jsonMatch && jsonMatch[1]) {
+                                videoCount = parseInt(jsonMatch[1].replace(/,/g, ''));
+                            }
                         }
                     }
                 }
@@ -1234,7 +1240,7 @@
                     
                     if (i === retryCount) {
                         // Nếu tất cả các lần thử đều thất bại, thử phương pháp dự phòng
-                        return await fetchVideosFallback();
+                        return await fetchVideosFromHTML();
                     }
                     
                     // Wait before retrying with exponential backoff
@@ -1245,61 +1251,88 @@
             return [];
         }
         
-        // Phương pháp dự phòng để lấy video
-        async function fetchVideosFallback() {
+        // Fetch videos from HTML page as fallback
+        async function fetchVideosFromHTML() {
             try {
-                // Tạo một số video mẫu dựa trên channel ID
-                const videos = [
-                    {
-                        id: 'jNQXAC9IVRw',
-                        title: 'Pokemon Revolution Online - Hướng dẫn chơi cho người mới bắt đầu',
-                        published: new Date().toISOString(),
-                        description: 'Video hướng dẫn chi tiết cách chơi Pokemon Revolution Online cho người mới bắt đầu',
-                        thumbnail: `https://img.youtube.com/vi/jNQXAC9IVRw/mqdefault.jpg`,
-                        viewCount: 125000
-                    },
-                    {
-                        id: 'M7lc1UVf-VE',
-                        title: 'Pokemon Revolution Online - Cách bắt đầu và các mẹo quan trọng',
-                        published: new Date(Date.now() - 86400000).toISOString(), // 1 ngày trước
-                        description: 'Hướng dẫn chi tiết cách bắt đầu chơi Pokemon Revolution Online và các mẹo quan trọng',
-                        thumbnail: `https://img.youtube.com/vi/M7lc1UVf-VE/mqdefault.jpg`,
-                        viewCount: 98000
-                    },
-                    {
-                        id: 'dQw4w9WgXcQ',
-                        title: 'Pokemon Revolution Online - Tổng hợp các Pokemon hiếm và cách bắt chúng',
-                        published: new Date(Date.now() - 172800000).toISOString(), // 2 ngày trước
-                        description: 'Video tổng hợp các Pokemon hiếm trong Pokemon Revolution Online và hướng dẫn cách bắt chúng',
-                        thumbnail: `https://img.youtube.com/vi/dQw4w9WgXcQ/mqdefault.jpg`,
-                        viewCount: 156000
-                    },
-                    {
-                        id: '9bZkp7q19f0',
-                        title: 'Pokemon Revolution Online - Hướng dẫn chiến thắng các trận đấu quan trọng',
-                        published: new Date(Date.now() - 259200000).toISOString(), // 3 ngày trước
-                        description: 'Hướng dẫn chi tiết cách chiến thắng các trận đấu quan trọng trong Pokemon Revolution Online',
-                        thumbnail: `https://img.youtube.com/vi/9bZkp7q19f0/mqdefault.jpg`,
-                        viewCount: 203000
-                    },
-                    {
-                        id: 'RgKAFK5djSk',
-                        title: 'Pokemon Revolution Online - Cách xây dựng đội hình mạnh nhất',
-                        published: new Date(Date.now() - 345600000).toISOString(), // 4 ngày trước
-                        description: 'Video hướng dẫn cách xây dựng đội hình mạnh nhất trong Pokemon Revolution Online',
-                        thumbnail: `https://img.youtube.com/vi/RgKAFK5djSk/mqdefault.jpg`,
-                        viewCount: 178000
-                    }
-                ];
+                const apiUrl = `https://www.youtube.com/channel/${CHANNEL_ID}/videos`;
+                const proxyUrl = getRandomProxy();
+                const response = await fetch(proxyUrl + encodeURIComponent(apiUrl));
                 
-                // Cache the results
-                videoCache.set(CHANNEL_ID, videos);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const htmlText = await response.text();
+                
+                // Extract video data from HTML
+                const videoDataMatch = htmlText.match(/"videoRenderer":({.*?})/g);
+                const videos = [];
+                
+                if (videoDataMatch) {
+                    for (const match of videoDataMatch) {
+                        try {
+                            const videoData = JSON.parse(match);
+                            
+                            // Extract video ID
+                            const videoId = videoData.videoId;
+                            
+                            // Extract title
+                            const title = videoData.title?.runs?.[0]?.text || '';
+                            
+                            // Extract thumbnail
+                            const thumbnail = videoData.thumbnail?.thumbnails?.[0]?.url || '';
+                            
+                            // Extract published time
+                            const publishedTime = videoData.publishedTimeText?.simpleText || '';
+                            
+                            // Extract view count
+                            const viewCountText = videoData.viewCountText?.simpleText || '0';
+                            const viewCount = parseInt(viewCountText.replace(/[^0-9]/g, '')) || 0;
+                            
+                            // Extract description
+                            const description = videoData.descriptionSnippet?.runs?.map(run => run.text).join('') || '';
+                            
+                            if (videoId && title) {
+                                videos.push({
+                                    id: videoId,
+                                    title: title,
+                                    published: new Date().toISOString(), // Fallback date
+                                    description: description,
+                                    thumbnail: thumbnail,
+                                    viewCount: viewCount
+                                });
+                            }
+                        } catch (e) {
+                            console.error('Lỗi khi phân tích video data:', e);
+                        }
+                    }
+                }
                 
                 return videos;
             } catch (error) {
-                console.error('Fallback method also failed:', error);
+                console.error('Error fetching videos from HTML:', error);
                 return [];
             }
+        }
+        
+        // Hàm lấy 5 video ngẫu nhiên từ danh sách video
+        function getRandomVideos(videos, count = 5) {
+            // Nếu số lượng video ít hơn hoặc bằng count, trả về tất cả video
+            if (videos.length <= count) {
+                return [...videos];
+            }
+            
+            // Tạo bản sao của mảng video để không thay đổi mảng gốc
+            const shuffled = [...videos];
+            
+            // Thuật toán Fisher-Yates để xáo trộn mảng
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            
+            // Trả về count video đầu tiên sau khi xáo trộn
+            return shuffled.slice(0, count);
         }
         
         // Display channel info
@@ -1364,8 +1397,11 @@
                 return;
             }
             
+            // Lấy 5 video ngẫu nhiên từ danh sách đã lọc
+            const randomVideos = getRandomVideos(filteredVideos, 5);
+            
             // Create video items
-            filteredVideos.forEach((video, index) => {
+            randomVideos.forEach((video, index) => {
                 const { id, title, published, thumbnail, viewCount } = video;
                 const thumbnailUrl = thumbnail || `https://img.youtube.com/vi/${id}/mqdefault.jpg`;
                 const formattedViews = formatNumber(viewCount);
@@ -1397,18 +1433,6 @@
                 
                 elements.videoList.appendChild(videoItem);
             });
-            
-            // Đảm bảo danh sách video có thanh cuộn khi cần thiết
-            const videoListContainer = document.querySelector('.video-list-container');
-            const videoList = document.querySelector('.video-list');
-            
-            // Tính toán chiều cao tối đa cho danh sách video
-            const containerHeight = videoListContainer.offsetHeight;
-            const searchHeight = document.querySelector('.search-container').offsetHeight;
-            const maxHeight = containerHeight - searchHeight - 20; // 20px là padding
-            
-            // Đặt chiều cao tối đa cho danh sách video
-            videoList.style.maxHeight = `${maxHeight}px`;
         }
         
         // Show error message
